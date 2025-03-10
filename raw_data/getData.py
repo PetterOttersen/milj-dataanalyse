@@ -1,4 +1,5 @@
 # Kode hentet fra https://frost.met.no/python_example.html
+
 import requests
 import pandas as pd
 
@@ -35,5 +36,3 @@ for i in range(len(data)):
     df = df._append(row)
 
 df = df.reset_index()
-
-print(df)
