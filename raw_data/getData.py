@@ -11,7 +11,7 @@ endpoint = 'https://frost.met.no/observations/v0.jsonld'
 parameters = {
     'sources': 'SN68860,SN39210',
     'elements': 'mean(air_temperature P1D),sum(precipitation_amount P1D), surface_snow_thickness',
-    'referencetime': '2004-12-31/2024-12-31',
+    'referencetime': '2012-12-31/2024-12-31',
 }
 # Issue an HTTP GET request
 r = requests.get(endpoint, parameters, auth=(client_id,''))
