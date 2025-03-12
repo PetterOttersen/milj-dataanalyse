@@ -9,9 +9,9 @@ client_id = '1b7e5cfb-47e3-4e89-b0b5-473bedac8160'
 # Define endpoint and parameters
 endpoint = 'https://frost.met.no/observations/v0.jsonld'
 parameters = {
-    'sources': 'SN18700,SN90450',
-    'elements': 'mean(air_temperature P1D),sum(precipitation_amount P1D),mean(wind_speed P1D)',
-    'referencetime': '2010-04-01/2010-04-03',
+    'sources': 'SN68860,SN39210',
+    'elements': 'mean(air_temperature P1D),sum(precipitation_amount P1D), surface_snow_thickness',
+    'referencetime': '2004-12-31/2024-12-31',
 }
 # Issue an HTTP GET request
 r = requests.get(endpoint, parameters, auth=(client_id,''))
@@ -36,3 +36,5 @@ for i in range(len(data)):
     df = df._append(row)
 
 df = df.reset_index()
+
+df.to_csv("raw_data/data/csv_df.csv")
