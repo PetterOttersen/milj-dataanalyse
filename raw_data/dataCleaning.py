@@ -6,7 +6,7 @@ df = pd.read_csv("raw_data/data/csv_df.csv")
 
 df.to_excel("Excelfil_ubeh.xlsx")
 
-df_trimmed = df[["index", "elementId", "value", "timeOffset", "qualityCode", "sourceId"]]
+df_trimmed = df[["index", "elementId", "value", "timeOffset", "qualityCode","referenceTime","sourceId"]]
 
 cutoff_quality = 3
 
