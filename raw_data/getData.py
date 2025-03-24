@@ -35,6 +35,13 @@ for i in range(len(data)):
     row['sourceId'] = data[i]['sourceId']
     df = df._append(row)
 
-df = df.reset_index()
+df_weather = df.reset_index()
 
-df.to_csv("raw_data/data/csv_df.csv")
+
+#Kode hentet fra SSB: https://www.ssb.no/api/pxwebapi/api-eksempler-pa-kode/doi_csv_nor
+
+emissions_data = pd.read_csv("https://data.ssb.no/api/v0/dataset/832678.csv?lang=no", sep=';', decimal=',', encoding = "ISO-8859-1", )
+emissions_data.rename({"år": "ar"})
+emissions_data.to_csv("raw_data/data/csv_emissions.csv")
+
+print(list(emissions_data))
