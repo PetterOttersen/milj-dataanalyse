@@ -8,7 +8,7 @@ df_emissions = pd.read_csv("raw_data/data/csv_emissions.csv")
 df_weather.to_excel("Excelfil_ubeh.xlsx")
 df_emissions.to_excel("Utslipp.xlsx")
 
-df_trimmed_weather = df_weather[["index", "elementId", "value", "timeOffset", "qualityCode", "sourceId"]]
+df_trimmed_weather = df_weather[["index", "elementId", "value", "timeOffset", "qualityCode","referenceTime","sourceId"]]
 df_trimmed_emissions = df_emissions[["kilde (aktivitet)", "energiprodukt", "komponent", "år", "statistikkvariabel", "13931: Klimagasser AR5, etter kilde (aktivitet), energiprodukt, komponent, år og statistikkvariabel"]]
 
 cutoff_quality = 3
