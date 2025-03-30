@@ -27,7 +27,12 @@ cutoff_quality = 3
 
 quality_dict = df_trimmed_weather["qualityCode"].to_dict()
 non_valid_qualities = []
-
+"""
+non_valid_qualities = [
+    key for key, value in quality_dict.items()
+    if pd.isna(value) or not str(value).isdigit() or int(value) > cutoff_quality
+]
+"""
 for key in quality_dict:
     try:
         int(quality_dict[key])
