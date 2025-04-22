@@ -43,4 +43,4 @@ df_weather = df.reset_index()
 emissions_data = pd.read_csv("https://data.ssb.no/api/v0/dataset/832678.csv?lang=no", sep=';', decimal=',', encoding = "ISO-8859-1", )
 emissions_data.to_csv("raw_data/data/csv_emissions.csv")
 
-print(list(emissions_data))
+print("All data hentet")
