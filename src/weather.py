@@ -152,3 +152,7 @@ def nedbør(resultater):
         print("Median nedbøren er:",round(median_nedbør,2),"mm")
         print("Standardavviket til nedbøren er:",round(standardavvik_nedbør),"mm")
 
+
+
+
+
