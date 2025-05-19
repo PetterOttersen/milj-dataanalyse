@@ -5,7 +5,7 @@ import pandas as pd
 df_weather = pd.read_csv("raw_data/data/csv_weather.csv")
 df_emissions = pd.read_csv("raw_data/data/csv_emissions.csv")
 
-df_weather.to_excel("Excelfil_ubeh.xlsx")
+df_weather.to_csv("raw_data/data/Vaerdata_ubehandlet.csv")
 
 df_trimmed_weather = df_weather[["elementId", "value", "timeOffset", "qualityCode","referenceTime","sourceId"]]
 df_trimmed_emissions = df_emissions[["kilde (aktivitet)", "energiprodukt", "komponent", "år", "statistikkvariabel", "13931: Klimagasser AR5, etter kilde (aktivitet), energiprodukt, komponent, år og statistikkvariabel"]]
@@ -52,7 +52,7 @@ filter_condition = (
 )
 df_trimmed_emissions = df_trimmed_emissions[filter_condition] #Bruker list comprehension til å sortere ut ikke-relevante data
 
-df_trimmed_emissions.to_excel("Excelfil_utslipp.xlsx")
-df_trimmed_weather.to_excel("Excelfil.xlsx")
+df_trimmed_emissions.to_csv("raw_data/data/Utslippdata.csv")
+df_trimmed_weather.to_csv("raw_data/data/Vaerdata.csv")
 
 
