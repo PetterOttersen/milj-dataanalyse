@@ -5,7 +5,7 @@ import pandas as pd
 df_weather = pd.read_csv("raw_data/data/csv_weather.csv")
 df_emissions = pd.read_csv("raw_data/data/csv_emissions.csv")
 
-df_weather.to_csv("raw_data/data/Vaerdata_ubehandlet.csv")
+df_weather.to_csv("raw_data/data/Vaerdata_ubehandlet.csv", index = False) #Inkluderer index = False for å unngå få med indexen 
 
 df_trimmed_weather = df_weather[["elementId", "value", "timeOffset", "qualityCode","referenceTime","sourceId"]]
 df_trimmed_emissions = df_emissions[["kilde (aktivitet)", "energiprodukt", "komponent", "år", "statistikkvariabel", "13931: Klimagasser AR5, etter kilde (aktivitet), energiprodukt, komponent, år og statistikkvariabel"]]
@@ -45,14 +45,14 @@ for key in quality_dict:
 #df_trimmed_weather = df_trimmed_weather.drop(non_valid_qualities)
 
 filter_condition = (
-    (df_trimmed_emissions["år"] >= 2013) & 
-    (df_trimmed_emissions["år"] <= 2024) & 
+    (df_trimmed_emissions["år"].between(2013,2024)) &
     (df_trimmed_emissions["komponent"] == "K11 Karbondioksid (CO2)") & 
     (df_trimmed_emissions["energiprodukt"] == "VT0 I alt")
 )
+
 df_trimmed_emissions = df_trimmed_emissions[filter_condition] #Bruker list comprehension til å sortere ut ikke-relevante data
 
-df_trimmed_emissions.to_csv("raw_data/data/Utslippdata.csv")
-df_trimmed_weather.to_csv("raw_data/data/Vaerdata.csv")
+df_trimmed_emissions.to_csv("raw_data/data/Utslippdata.csv", index = False)
+df_trimmed_weather.to_csv("raw_data/data/Vaerdata.csv", index = False)
 
 
