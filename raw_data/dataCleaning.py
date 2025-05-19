@@ -16,12 +16,20 @@ non_valid_qualities = []
 
 cutoff_quality = 3 #Dataen fra FROST API kommer med en kvalitetsparameter. Her velger vi å beholde dataen hvis kvaliteten er under 3
 
-non_valid_qualities = [
-    key for key, value in quality_dict.items()
+df_trimmed_weather = df_trimmed_weather.dropna(subset=["qualityCode"]) #Fjerner NA-verdier fra dfen
+
+cutoff_quality = 3
+
+df_trimmed_weather = df_trimmed_weather.reset_index(drop=True)
+quality_dict = df_trimmed_weather["qualityCode"].to_dict()
+
+non_valid_indices = [
+    index for index, value in quality_dict.items()
     if pd.isna(value) or not str(value).isdigit() or int(value) > cutoff_quality
 ]
+df_trimmed_weather = df_trimmed_weather.drop(non_valid_indices)
 
-""""
+"""
 for key in quality_dict:
     try:
         int(quality_dict[key])
@@ -34,7 +42,7 @@ for key in quality_dict:
         non_valid_qualities.append(key)
 """
 
-df_trimmed_weather = df_trimmed_weather.drop(non_valid_qualities)
+#df_trimmed_weather = df_trimmed_weather.drop(non_valid_qualities)
 
 filter_condition = (
     (df_trimmed_emissions["år"] >= 2013) & 
