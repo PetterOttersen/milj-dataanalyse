@@ -7,6 +7,7 @@ df_emissions = pd.read_csv("raw_data/data/csv_emissions.csv")
 
 df_weather.to_csv("raw_data/data/Vaerdata_ubehandlet.csv", index = False) #Inkluderer index = False for å unngå få med indexen 
 
+
 df_trimmed_weather = df_weather[["elementId", "value", "timeOffset", "qualityCode","referenceTime","sourceId"]]
 df_trimmed_emissions = df_emissions[["kilde (aktivitet)", "energiprodukt", "komponent", "år", "statistikkvariabel", "13931: Klimagasser AR5, etter kilde (aktivitet), energiprodukt, komponent, år og statistikkvariabel"]]
 
@@ -16,33 +17,13 @@ non_valid_qualities = []
 
 cutoff_quality = 3 #Dataen fra FROST API kommer med en kvalitetsparameter. Her velger vi å beholde dataen hvis kvaliteten er under 3
 
-df_trimmed_weather = df_trimmed_weather.dropna(subset=["qualityCode"]) #Fjerner NA-verdier fra dfen
+filter = []
+for idx, row in df_trimmed_weather.iterrows(): #Sorterer ut NA-verdier, ikke-eksisterende og for høye verdier fra kvalitetskolonna
+    i = row["qualityCode"]
+    filter.append(pd.isna(i) or not str(i).isdigit() or int(i) > cutoff_quality)
 
-cutoff_quality = 3
-
-df_trimmed_weather = df_trimmed_weather.reset_index(drop=True)
-quality_dict = df_trimmed_weather["qualityCode"].to_dict()
-
-non_valid_indices = [
-    index for index, value in quality_dict.items()
-    if pd.isna(value) or not str(value).isdigit() or int(value) > cutoff_quality
-]
-df_trimmed_weather = df_trimmed_weather.drop(non_valid_indices)
-
-"""
-for key in quality_dict:
-    try:
-        int(quality_dict[key])
-
-    except ValueError:  #Sorterer ut Nan-verdier
-        non_valid_qualities.append(key)
-        continue
-
-    if (int(quality_dict[key]) > cutoff_quality):  #Sorterer ut verdier dersom de overstiger kvalitets-cutoffen.
-        non_valid_qualities.append(key)
-"""
-
-#df_trimmed_weather = df_trimmed_weather.drop(non_valid_qualities)
+df_trimmed_weather = df_trimmed_weather[~pd.Series(filter, index=df_trimmed_weather.index)]
+#~ sin funksjon er at istedenfor å beholde de gitte radene, forkaster den radene. ~ er feks. tilsvarende en not-gate fra kretsteknikk
 
 filter_condition = (
     (df_trimmed_emissions["år"].between(2013,2024)) &
