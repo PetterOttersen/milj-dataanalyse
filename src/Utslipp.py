@@ -5,8 +5,7 @@ import seaborn as sns
 import os
 
 
-
-file_path = "../raw_data/data/Utslippdata.csv"
+file_path = "raw_data/data/Utslippdata.csv"
 df = pd.read_csv(file_path)
 
 
