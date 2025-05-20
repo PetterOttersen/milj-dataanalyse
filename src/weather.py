@@ -5,13 +5,13 @@ import matplotlib.pyplot as plt
 
 
 
-FILE_PATH = "../Excelfil.xlsx"
+FILE_PATH = "../raw_data/data/Vaerdata.csv"
 
 
 def analyze_weather_data():
     
     # Leser data fra Excel-filen
-    data = pd.read_excel(FILE_PATH)
+    data = pd.read_csv(FILE_PATH)
     
     # Konverterer tiden
     data["referenceTime"] = pd.to_datetime(data["referenceTime"])
@@ -93,7 +93,7 @@ def temperatur(resultater):
         #Plot temperatur over tid
         plt.figure(figsize=(15,5))
         plt.plot(temp_tider_sortert,temperatur_sortert) 
-        plt.title("Temperatur over tid")
+        plt.title("Figur 1: Temperatur over tid")
         plt.xlabel("antall målinger")
         plt.ylabel("Temperatur (C)")
         plt.grid(True)
@@ -105,7 +105,7 @@ def temperatur(resultater):
         plt.figure(figsize=(15,5))
         plt.bar(temp_årlig_uten_2012.index,temp_årlig_uten_2012.values)
         plt.xticks(temp_årlig_uten_2012.index)
-        plt.title("Gjennomsnittstemperatur gjennom årene")
+        plt.title("Figur 2: Gjennomsnittstemperatur gjennom årene")
         plt.xlabel("År")
         plt.ylabel("Gjennomsnittstemperatur i °C")
         plt.grid(True)
@@ -129,7 +129,7 @@ def nedbør(resultater):
         #Plot nedbør over tid
         plt.figure(figsize=(15,5))
         plt.plot(nedbør_tider_sortert,nedbør_sortert)  
-        plt.title("Nedbørsdata over tid")
+        plt.title("Figur 3: Nedbørsdata over tid")
         plt.xlabel("antall målinger")
         plt.ylabel("Nedbør (mm)")
         plt.grid(True)
@@ -141,7 +141,7 @@ def nedbør(resultater):
         plt.figure(figsize=(15,5))
         plt.bar(nedbør_årlig_uten_2012.index,nedbør_årlig_uten_2012.values)
         plt.xticks(nedbør_årlig_uten_2012.index)
-        plt.title("Gjennomsnittsnedbør ulike årene")
+        plt.title("Figur 4: Gjennomsnittsnedbør ulike årene")
         plt.xlabel("År")
         plt.ylabel("Gjennomsnittsnedbør i mm")
         plt.grid(True)
