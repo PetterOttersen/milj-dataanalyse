@@ -151,6 +151,32 @@ def nedbør(resultater):
         print("Gjennomsnittsnedbøren er:",round(gjennomsnitts_nedbør,2),"mm")
         print("Median nedbøren er:",round(median_nedbør,2),"mm")
         print("Standardavviket til nedbøren er:",round(standardavvik_nedbør),"mm")
+        
+
+def sammenlign_temp_nedbør(resultater):
+    # Data fra analyse
+    temp_data = resultater["temp_data"]
+    nedbør_data = resultater["nedbør_data"]
+
+    # Beregn årlig gjennomsnitt for temperatur og nedbør
+    temp_årlig = temp_data.groupby(pd.to_datetime(temp_data['justertTid']).dt.year)['value'].mean()
+    nedbør_årlig = nedbør_data.groupby(pd.to_datetime(nedbør_data['justertTid']).dt.year)['value'].mean()
+
+    # Fjern år med manglende data (f.eks. 2012)
+    temp_årlig = temp_årlig[1:]
+    nedbør_årlig = nedbør_årlig[1:]
+
+    # Beregn korrelasjon
+    korrelasjon = temp_årlig.corr(nedbør_årlig)
+    print(f"Korrelasjon mellom temperatur og nedbør: {korrelasjon:.2f}")
+
+    # Visualiser sammenhengen
+    plt.figure(figsize=(10, 6))
+    plt.scatter(temp_årlig, nedbør_årlig, color='blue', alpha=0.7)
+    plt.title("Sammenheng mellom temperatur og nedbør")
+    plt.xlabel("Gjennomsnittstemperatur (°C)")
+    plt.ylabel("Gjennomsnittsnedbør (mm)")
+    plt.grid(True)
 
 
 
