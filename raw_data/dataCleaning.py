@@ -20,10 +20,11 @@ cutoff_quality = 3 #Dataen fra FROST API kommer med en kvalitetsparameter. Her v
 filter = []
 for idx, row in df_trimmed_weather.iterrows(): #Sorterer ut NA-verdier, ikke-eksisterende og for høye verdier fra kvalitetskolonna
     i = row["qualityCode"]
-    filter.append(pd.isna(i) or not str(i).isdigit() or int(i) > cutoff_quality)
+    filter.append(pd.isna(i) or str(i).isdigit() or int(i) > cutoff_quality)
 
 df_trimmed_weather = df_trimmed_weather[~pd.Series(filter, index=df_trimmed_weather.index)]
-#~ sin funksjon er at istedenfor å beholde de gitte radene, forkaster den radene. ~ er feks. tilsvarende en not-gate fra kretsteknikk
+#~ sin funksjon er at istedenfor å beholde den gitte kolonna, forkaster den kolonna. ~ er feks. tilsvarende en not-gate fra kretsteknikk
+
 
 filter_condition = (
     (df_trimmed_emissions["år"].between(2013,2024)) &
