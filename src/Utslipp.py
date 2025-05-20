@@ -2,11 +2,13 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import seaborn as sns
+import os
 
 
 
-file_path_utslipp = "../raw_data/data/Utslippdata.csv"
-df = pd.read_csv(file_path_utslipp)
+file_path = "../raw_data/data/Utslippdata.csv"
+df = pd.read_csv(file_path)
+
 
 def analyze_clean_utslipp_data(df):
     df.columns = ['kilde', 'energiprodukt', 'komponent', 'år', 'statistikkvariabel', 'verdi'] #ai
