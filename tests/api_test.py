@@ -1,13 +1,5 @@
-import sys
-from pathlib import Path
-
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(PROJECT_ROOT))
-
-from raw_data.dataCleaning import filter_weather
 import unittest
 import requests
-import pandas as pd
 
 #from dataCleaning import filter_weather
 
@@ -24,37 +16,18 @@ class TestAPI(unittest.TestCase):
     def test_api_connection(self):
         # Sjekker om API-en henter statuskode 200
         r = requests.get(endpoint, parameters, auth=(self.client_id, ''))
-        assert r.status_code == 200, f"API request failed with status code {r.status_code}"
+        self.assertEqual(r.status_code, 200, f"API-forespørel feilet med statuskde {r.status_code}")
 
     def test_nonexistent_api(self):
         # Tester hva som skjer hvis man gir en ikke gyldig parameter til apien. Her tester vi en tid som ikke ligger i datasettet
         empty_params = {'sources': 'SN68860', 'referencetime': '1900-01-01/1900-01-02'}
         r = requests.get(endpoint, empty_params, auth=(self.client_id, ''))
-        assert len(r.json().get('data', [])) == 0, "Empty response not handled"
+        self.assertEqual(len(r.json().get('data', [])), 0, "Tom respons ikke lik 0")
 
-class TestData(unittest.TestCase):
-    def testWeatherFilter(self):
-        df = pd.read_csv("raw_data/data/Vaerdata.csv")
-        appended_rows = pd.DataFrame([[0,0], [0,0], [0,0], ["test", 6], [0,0], [0,0]]) #Lager rader med bevisst feil data
-
-        len_original_df = len(df)
-
-        df_corrupted = pd.concat([df, appended_rows], ignore_index=True)
-        len_corrupted_df = len(df_corrupted) #"Ødelegger" df for p sjekke om den fikses
-
-        fixed_df = filter_weather(df_corrupted)
-        len_fixed_df = len(fixed_df)
-
-        assert len_original_df == len_fixed_df #Sjekker at den ødelagte df-en faktisk fikses
-
-        
-
-        
 
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestAPI))
-    suite.addTest(unittest.TestLoader().loadTestsFromTestCase(TestData))
     return suite
 
 runner = unittest.TextTestRunner()

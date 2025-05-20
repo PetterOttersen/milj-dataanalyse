@@ -24,16 +24,21 @@ def filter_weather(df_trimmed_weather):
 
     return df_trimmed_weather
 
+
+def filter_emissions(df_trimmed_emissions):
+    filter_condition = (
+        (df_trimmed_emissions["år"].between(2013,2024)) &
+        (df_trimmed_emissions["komponent"] == "K11 Karbondioksid (CO2)") & 
+        (df_trimmed_emissions["energiprodukt"] == "VT0 I alt")
+    )
+
+    df_trimmed_emissions = df_trimmed_emissions[filter_condition] #Bruker list comprehension til å sortere ut ikke-relevante data
+
+    return df_trimmed_emissions
+
+
 df_trimmed_weather = filter_weather(df_trimmed_weather)
-
-
-filter_condition = (
-    (df_trimmed_emissions["år"].between(2013,2024)) &
-    (df_trimmed_emissions["komponent"] == "K11 Karbondioksid (CO2)") & 
-    (df_trimmed_emissions["energiprodukt"] == "VT0 I alt")
-)
-
-df_trimmed_emissions = df_trimmed_emissions[filter_condition] #Bruker list comprehension til å sortere ut ikke-relevante data
+df_trimmed_emissions = filter_emissions(df_trimmed_emissions)
 
 df_trimmed_emissions.to_csv("raw_data/data/Utslippdata.csv", index = False)
 df_trimmed_weather.to_csv("raw_data/data/Vaerdata.csv", index = False)
