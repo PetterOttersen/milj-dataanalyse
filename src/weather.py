@@ -5,13 +5,13 @@ import matplotlib.pyplot as plt
 
 
 
-FILE_PATH = "../Excelfil.xlsx"
+FILE_PATH = "../raw_data/data/Vaerdata.csv"
 
 
 def analyze_weather_data():
     
     # Leser data fra Excel-filen
-    data = pd.read_excel(FILE_PATH)
+    data = pd.read_csv(FILE_PATH)
     
     # Konverterer tiden
     data["referenceTime"] = pd.to_datetime(data["referenceTime"])
