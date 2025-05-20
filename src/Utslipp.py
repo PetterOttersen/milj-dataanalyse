@@ -5,18 +5,17 @@ import seaborn as sns
 
 
 
-file_path_utslipp = "../Excelfil_utslipp.xlsx"
-df = pd.read_excel(file_path_utslipp)
+file_path_utslipp = "../raw_data/data/Utslippdata.csv"
+df = pd.read_csv(file_path_utslipp)
 
 def analyze_clean_utslipp_data(df):
-    df.columns = ['index', 'kilde', 'energiprodukt', 'komponent', 'år', 'statistikkvariabel', 'verdi'] #ai
+    df.columns = ['kilde', 'energiprodukt', 'komponent', 'år', 'statistikkvariabel', 'verdi'] #ai
     df = df[['kilde', 'energiprodukt', 'komponent', 'år', 'verdi']] #ai
     alle_kilder = df[df['kilde'].str.contains("0 Alle kilder", na=False)].index #retting av ai
     df = df.drop(alle_kilder)
     return df
 
-
-
+#Rydder datasettet, beholder relevante kolonner og fjerner rader for å gjøre videre datahåndtering lettere
 
 class plots: 
 
