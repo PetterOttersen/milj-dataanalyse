@@ -1,5 +1,11 @@
+import sys
+sys.path.append("../raw_data")
+
 import unittest
 import requests
+import pandas as pd
+
+from dataCleaning import filter_weather
 
 endpoint = 'https://frost.met.no/observations/v0.jsonld'
 parameters = {
@@ -23,13 +29,21 @@ class TestAPI(unittest.TestCase):
         assert len(r.json().get('data', [])) == 0, "Empty response not handled"
 
 class TestData(unittest.TestCase):
+    def testDataHandling(self):
+        df = pd.read_csv("raw_data/data/Vaerdata.csv")
+        appended_rows = pd.DataFrame([[0,0], [0,0], [0,0], ["test", 6], [0,0], [0,0]])
 
-    def testNAHandling(self):
-        pass 
+        len_original_df = len(df)
+
+        df.append(appended_rows)
+        len_corrupted_df = len(df)
+
+        
 
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestAPI))
+    suite.addTest(unittest.TestLoader().loadTestsFromTestCase(TestData))
     return suite
 
 runner = unittest.TextTestRunner()
