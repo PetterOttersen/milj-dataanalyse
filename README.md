@@ -1,1 +1,1 @@
-I denne oppgaven fremstilles data fra yr (https://frost.met.no/observations/v0.jsonld) i Kristiansand og Trondheim i perioden 31.12.2012 - 31.12-2024 
+I denne oppgaven fremstilles data hentet fra yr (https://frost.met.no/observations/v0.jsonld) som tilhører værstasjoner fra hele Norge, og data hentet fra statistisk sentralbyrå (https://data.ssb.no/api/v0/dataset/832678.csv?lang=no) som er data fra Norge. I dette programmet vil vi se på data fra 2013 til 2024, og gi en prediktiv analyse av hvordan tallene kan se ut frem til 2050. 
