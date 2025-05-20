@@ -1,4 +1,4 @@
-Marker hvis det er fullført
+###### Marker hvis det er fullført
 
 
 **Fjerne excel fil**
@@ -7,4 +7,9 @@ Fikse commitmeldinger
 Skrive hva som er KI
 Opprette readme.md
 **Src og notebooks**
+Gjøre predektiv analyse (utslipp)
+Lage interaktive visualiseringer (utslipp)
+    
+
+
 
