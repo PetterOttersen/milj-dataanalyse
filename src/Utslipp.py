@@ -80,6 +80,7 @@ class plots:
         plt.xlabel("År",size = 11)        
         plt.ylabel("CO2 utslipp kilder", size = 11) 
         plt.title("Varmekart over kilder, år og mengden av utslipp",size = 16)
+        plt.show()
 
 #Last inn data
 #Dataen inneholder både heltall og tekstrenger. Datasettet ligger i grupper 
