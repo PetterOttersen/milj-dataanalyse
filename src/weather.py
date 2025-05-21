@@ -12,7 +12,7 @@ class analyse_og_visualisere:
     def __init__(self, file_path="../raw_data/data/Vaerdata.csv"):
         self.FILE_PATH = file_path
 
-    def analyze_weather_data(self):
+    def analyser_værdata_data(self):
     
     # Leser data fra Excel-filen
         data = pd.read_csv(self.FILE_PATH)
