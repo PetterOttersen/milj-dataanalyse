@@ -7,81 +7,81 @@ import matplotlib.pyplot as plt
 
 FILE_PATH = "../raw_data/data/Vaerdata.csv"
 
-
-def analyze_weather_data():
+class analyse_og_visualisere:
+    def analyze_weather_data():
     
     # Leser data fra Excel-filen
-    data = pd.read_csv(FILE_PATH)
+        data = pd.read_csv(FILE_PATH)
     
     # Konverterer tiden til datetime og justerer med hensyn på timeOffset
-    data["referenceTime"] = pd.to_datetime(data["referenceTime"])
-    data["timeOffset"] = pd.to_timedelta(data["timeOffset"])
-    data["justertTid"] = data["referenceTime"] - data["timeOffset"]
+        data["referenceTime"] = pd.to_datetime(data["referenceTime"])
+        data["timeOffset"] = pd.to_timedelta(data["timeOffset"])
+        data["justertTid"] = data["referenceTime"] - data["timeOffset"]
 
     # Filtrer temperatur og nedbør
-    temp_data = data[data["elementId"] == "mean(air_temperature P1D)"]
-    nedbør_data = data[data["elementId"] == "sum(precipitation_amount P1D)"]
+        temp_data = data[data["elementId"] == "mean(air_temperature P1D)"]
+        nedbør_data = data[data["elementId"] == "sum(precipitation_amount P1D)"]
 
     # Henter ut verdiene og sorterer
-    temperatur = temp_data["value"].values
-    temp_tider = temp_data["justertTid"].values
-    sortert_index = np.argsort(temp_tider)
-    temp_tider_sortert = temp_tider[sortert_index]
-    temperatur_sortert = temperatur[sortert_index]
+        temperatur = temp_data["value"].values
+        temp_tider = temp_data["justertTid"].values
+        sortert_index = np.argsort(temp_tider)
+        temp_tider_sortert = temp_tider[sortert_index]
+        temperatur_sortert = temperatur[sortert_index]
 
-    nedbør = nedbør_data["value"].values
-    nedbør_tider = nedbør_data["justertTid"].values
-    sortert_index_nedbør = np.argsort(nedbør_tider)
-    nedbør_tider_sortert = nedbør_tider[sortert_index_nedbør]
-    nedbør_sortert = nedbør[sortert_index_nedbør]
+        nedbør = nedbør_data["value"].values
+        nedbør_tider = nedbør_data["justertTid"].values
+        sortert_index_nedbør = np.argsort(nedbør_tider)
+        nedbør_tider_sortert = nedbør_tider[sortert_index_nedbør]
+        nedbør_sortert = nedbør[sortert_index_nedbør]
 
     # Korrelasjon mellom temperatur og nedbør
-    temp_daglig = temp_data.groupby(pd.to_datetime(temp_data['justertTid']).dt.date)['value'].mean()
-    nedbør_daglig = nedbør_data.groupby(pd.to_datetime(nedbør_data['justertTid']).dt.date)['value'].mean()
-    korrelasjon = temp_daglig.corr(nedbør_daglig)
+        temp_daglig = temp_data.groupby(pd.to_datetime(temp_data['justertTid']).dt.date)['value'].mean()
+        nedbør_daglig = nedbør_data.groupby(pd.to_datetime(nedbør_data['justertTid']).dt.date)['value'].mean()
+        korrelasjon = temp_daglig.corr(nedbør_daglig)
 
     # Statistikk for nedbør
-    gjennomsnitts_nedbør = np.mean(nedbør)
-    median_nedbør = np.median(nedbør)
-    standardavvik_nedbør = np.std(nedbør)
+        gjennomsnitts_nedbør = np.mean(nedbør)
+        median_nedbør = np.median(nedbør)
+        standardavvik_nedbør = np.std(nedbør)
 
     # Statistikk for temperatur
-    gjennomsnitts_temp = np.mean(temperatur)
-    median_temp = np.median(temperatur)
-    standardavvik_temp = np.std(temperatur)
+        gjennomsnitts_temp = np.mean(temperatur)
+        median_temp = np.median(temperatur)
+        standardavvik_temp = np.std(temperatur)
 
     # Resultater i et dictionary
-    resultater = {
-        "korrelasjon": korrelasjon,
-        "nedbør_statistikk": {
-            "gjennomsnitt": gjennomsnitts_nedbør,
-            "median": median_nedbør,
-            "standardavvik": standardavvik_nedbør
-        },
-        "temperatur_statistikk": {
-            "gjennomsnitt": gjennomsnitts_temp,
-            "median": median_temp,
-            "standardavvik": standardavvik_temp
-        },
-        "sorterte_data": {
-            "temperatur": {
-                "tider": temp_tider_sortert,
-                "verdier": temperatur_sortert
+        resultater = {
+            "korrelasjon": korrelasjon,
+            "nedbør_statistikk": {
+                "gjennomsnitt": gjennomsnitts_nedbør,
+                "median": median_nedbør,
+                "standardavvik": standardavvik_nedbør
             },
-            "nedbør": {
-                "tider": nedbør_tider_sortert,
-                "verdier": nedbør_sortert
-            }
-        },
-        "temp_data": temp_data,
-        "nedbør_data": nedbør_data
-    }
+            "temperatur_statistikk": {
+                "gjennomsnitt": gjennomsnitts_temp,
+                "median": median_temp,
+                "standardavvik": standardavvik_temp
+            },
+            "sorterte_data": {
+                "temperatur": {
+                    "tider": temp_tider_sortert,
+                    "verdier": temperatur_sortert
+                },
+                "nedbør": {
+                    "tider": nedbør_tider_sortert,
+                    "verdier": nedbør_sortert
+                }
+            },
+            "temp_data": temp_data,
+            "nedbør_data": nedbør_data
+        }
 
 
-    return resultater
+        return resultater
 
 
-def temperatur(resultater):
+    def temperatur(resultater):
         #Data fra analyze_weather_data
         temp_tider_sortert = resultater["sorterte_data"]["temperatur"]["tider"]
         temperatur_sortert = resultater["sorterte_data"]["temperatur"]["verdier"]
@@ -117,7 +117,7 @@ def temperatur(resultater):
 
 
 
-def nedbør(resultater):
+    def nedbør(resultater):
         #Data fra analyze_weather_data
         nedbør_tider_sortert = resultater["sorterte_data"]["nedbør"]["tider"]
         nedbør_sortert = resultater["sorterte_data"]["nedbør"]["verdier"]
@@ -153,30 +153,30 @@ def nedbør(resultater):
         print("Standardavviket til nedbøren er:",round(standardavvik_nedbør),"mm")
         
 
-def sammenlign_temp_nedbør(resultater):
+    def sammenlign_temp_nedbør(resultater):
     # Data fra analyze_weather_data
-    temp_data = resultater["temp_data"]
-    nedbør_data = resultater["nedbør_data"]
+        temp_data = resultater["temp_data"]
+        nedbør_data = resultater["nedbør_data"]
 
     # Beregn årlig gjennomsnitt for temperatur og nedbør
-    temp_årlig = temp_data.groupby(pd.to_datetime(temp_data['justertTid']).dt.year)['value'].mean()
-    nedbør_årlig = nedbør_data.groupby(pd.to_datetime(nedbør_data['justertTid']).dt.year)['value'].mean()
+        temp_årlig = temp_data.groupby(pd.to_datetime(temp_data['justertTid']).dt.year)['value'].mean()
+        nedbør_årlig = nedbør_data.groupby(pd.to_datetime(nedbør_data['justertTid']).dt.year)['value'].mean()
 
     # Fjerner 2012 pga. kun data fra 1 dag
-    temp_årlig = temp_årlig[1:]
-    nedbør_årlig = nedbør_årlig[1:]
+        temp_årlig = temp_årlig[1:]
+        nedbør_årlig = nedbør_årlig[1:]
 
     # Beregn korrelasjon
-    korrelasjon = temp_årlig.corr(nedbør_årlig)
-    print(f"Korrelasjon mellom temperatur og nedbør: {korrelasjon:.2f}")
+        korrelasjon = temp_årlig.corr(nedbør_årlig)
+        print(f"Korrelasjon mellom temperatur og nedbør: {korrelasjon:.2f}")
 
     # Visualiser sammenhengen
-    plt.figure(figsize=(10, 6))
-    plt.scatter(temp_årlig, nedbør_årlig, color='blue', alpha=0.7)
-    plt.title("Sammenheng mellom temperatur og nedbør")
-    plt.xlabel("Gjennomsnittstemperatur (°C)")
-    plt.ylabel("Gjennomsnittsnedbør (mm)")
-    plt.grid(True)
+        plt.figure(figsize=(10, 6))
+        plt.scatter(temp_årlig, nedbør_årlig, color='blue', alpha=0.7)
+        plt.title("Sammenheng mellom temperatur og nedbør")
+        plt.xlabel("Gjennomsnittstemperatur (°C)")
+        plt.ylabel("Gjennomsnittsnedbør (mm)")
+        plt.grid(True)
 
 
 
