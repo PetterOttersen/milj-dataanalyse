@@ -9,7 +9,7 @@ Opprette readme.md
 **Src og notebooks**
 Gjøre predektiv analyse (utslipp)
 Lage interaktive visualiseringer (utslipp)
-    
+
 
 
 

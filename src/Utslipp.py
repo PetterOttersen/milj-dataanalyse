@@ -47,7 +47,7 @@ class plots:
     def plot_co2_per_source_median(self):
         co2_per_source_median = self.df.groupby('kilde')['verdi'].mean() #medi
         plt.figure(figsize=(10, 6))
-        co2_per_source_median.plot(kind='bar', title="CO2-utslipp per kilde (gjennomsnitt)")
+        co2_per_source_median.plot(kind='bar', title="CO2-utslipp per kilde (median)")
         plt.ylabel("Utslipp (1000 tonn CO2-ekv.)")
         plt.xlabel("Kilde")
         plt.tight_layout()
@@ -76,11 +76,19 @@ class plots:
         sns.set_theme()
         co2_source_year_hm = (self.df.pivot(index="kilde", columns="år", values="verdi"))
         f, ax = plt.subplots(figsize=(9, 6))
-        sns.heatmap(co2_source_year_hm, annot=True, fmt="d", linewidths=.5, ax=ax)
+        sns.heatmap(co2_source_year_hm, annot=True, fmt=".0f", linewidths=.5, ax=ax)
         plt.xlabel("År",size = 11)        
         plt.ylabel("CO2 utslipp kilder", size = 11) 
         plt.title("Varmekart over kilder, år og mengden av utslipp",size = 16)
         plt.show()
+def 
+
+
+
+
+
+
+
 
 #Last inn data
 #Dataen inneholder både heltall og tekstrenger. Datasettet ligger i grupper 
