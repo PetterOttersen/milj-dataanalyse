@@ -186,7 +186,7 @@ class analyse_og_visualisere:
 
     
 
-    def prediksjonsanalyse_nedbør_lineær(resultater):
+    def prediksjonsanalyse_nedbør_lineær(self, resultater):
         nedbør_data = resultater["nedbør_data"]
         
         # Grupper etter år og beregn årlig gjennomsnitt
