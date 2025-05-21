@@ -8,10 +8,14 @@ import matplotlib.pyplot as plt
 FILE_PATH = "../raw_data/data/Vaerdata.csv"
 
 class analyse_og_visualisere:
-    def analyze_weather_data():
+
+    def __init__(self, file_path="../raw_data/data/Vaerdata.csv"):
+        self.FILE_PATH = file_path
+
+    def analyze_weather_data(self):
     
     # Leser data fra Excel-filen
-        data = pd.read_csv(FILE_PATH)
+        data = pd.read_csv(self.FILE_PATH)
     
     # Konverterer tiden til datetime og justerer med hensyn på timeOffset
         data["referenceTime"] = pd.to_datetime(data["referenceTime"])
@@ -81,7 +85,7 @@ class analyse_og_visualisere:
         return resultater
 
 
-    def temperatur(resultater):
+    def temperatur(self,resultater):
         #Data fra analyze_weather_data
         temp_tider_sortert = resultater["sorterte_data"]["temperatur"]["tider"]
         temperatur_sortert = resultater["sorterte_data"]["temperatur"]["verdier"]
@@ -117,7 +121,7 @@ class analyse_og_visualisere:
 
 
 
-    def nedbør(resultater):
+    def nedbør(self,resultater):
         #Data fra analyze_weather_data
         nedbør_tider_sortert = resultater["sorterte_data"]["nedbør"]["tider"]
         nedbør_sortert = resultater["sorterte_data"]["nedbør"]["verdier"]
@@ -153,7 +157,7 @@ class analyse_og_visualisere:
         print("Standardavviket til nedbøren er:",round(standardavvik_nedbør),"mm")
         
 
-    def sammenlign_temp_nedbør(resultater):
+    def sammenlign_temp_nedbør(self,resultater):
     # Data fra analyze_weather_data
         temp_data = resultater["temp_data"]
         nedbør_data = resultater["nedbør_data"]
