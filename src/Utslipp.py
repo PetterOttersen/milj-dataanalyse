@@ -3,14 +3,18 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import os
+from sklearn import datasets
+
 
 
 file_path = "raw_data/data/Utslippdata.csv"
-df = pd.read_csv(file_path)
+df = pd.read_csv(file_path) #Last inn data
+
 
 
 def analyze_clean_utslipp_data(df):
-    df.columns = ['kilde', 'energiprodukt', 'komponent', 'år', 'statistikkvariabel', 'verdi'] #ai
+    df.columns = ['kilde', 'energiprodukt', 'komponent', 'år', 'statistikkvariabel', 'verdi'] #ai #Dataen inneholder både heltall og tekstrenger. Datasettet ligger i grupper 
+
     df = df[['kilde', 'energiprodukt', 'komponent', 'år', 'verdi']] #ai
     alle_kilder = df[df['kilde'].str.contains("0 Alle kilder", na=False)].index #retting av ai
     df = df.drop(alle_kilder)
@@ -81,16 +85,26 @@ class plots:
         plt.ylabel("CO2 utslipp kilder", size = 11) 
         plt.title("Varmekart over kilder, år og mengden av utslipp",size = 16)
         plt.show()
-def 
+
+
+
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
 
 
 
+class plots_part_2: 
+
+    def __init__(self, df): #ai
+        self.df = df #ai
+    
+    def 
+    x =  self.df.groupby("år")
+    y = self.df.groupby("verdi")
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
+    scaler = StandardScaler()
 
 
 
 
-#Last inn data
-#Dataen inneholder både heltall og tekstrenger. Datasettet ligger i grupper 
-#print(df)
-#Rydder datasettet, beholder relevante kolonner og fjerner rader for å gjøre videre datahåndtering lettere
