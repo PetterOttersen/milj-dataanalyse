@@ -2,6 +2,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
 
 
 
@@ -181,6 +182,56 @@ class analyse_og_visualisere:
         plt.xlabel("Gjennomsnittstemperatur (°C)")
         plt.ylabel("Gjennomsnittsnedbør (mm)")
         plt.grid(True)
+
+
+    
+
+    def prediksjonsanalyse_nedbør_lineær(resultater):
+        nedbør_data = resultater["nedbør_data"]
+        
+        # Grupper etter år og beregn årlig gjennomsnitt
+        nedbør_årlig = nedbør_data.groupby(pd.to_datetime(nedbør_data['justertTid']).dt.year)['value'].mean()
+        nedbør_årlig_uten_2012 = nedbør_årlig[1:]
+        
+        # Forbered data for modellering
+        X = nedbør_årlig_uten_2012.index.values.reshape(-1, 1)
+        y = nedbør_årlig_uten_2012.values  
+        
+        # Tren lineær regresjonsmodell
+        model = LinearRegression()
+        model.fit(X, y)
+        
+        y_pred = model.predict(X)
+        
+        plt.figure(figsize=(12, 6))
+        
+        # Plot faktisk nedbør
+        plt.scatter(X, y, color='blue', label='Faktisk nedbør')
+        
+        # Plot regresjonslinje
+        plt.plot(X, y_pred, color='red', linewidth=2, label='Lineær regresjon')
+        
+        # Legger til antall år frem i tid
+        antall_fremtidige_år = 10  
+        siste_år = X[-1][0]
+        fremtidige_år = np.array([siste_år + i for i in range(1, antall_fremtidige_år + 1)]).reshape(-1, 1)
+        fremtidige_pred = model.predict(fremtidige_år)
+        plt.scatter(fremtidige_år, fremtidige_pred, color='green', marker='x', s=100, label='Fremtidige prediksjoner')
+        
+        for år, pred in zip(fremtidige_år.flatten(), fremtidige_pred):
+            plt.text(år, pred, f'{pred:.1f}', ha='center', va='bottom')
+        
+        plt.title('Årlig gjennomsnittlig nedbør med lineær regresjon')
+        plt.xlabel('År')
+        plt.ylabel('Gjennomsnittlig nedbør (mm)')
+        plt.legend()
+        plt.grid(True)
+        #flatten gjør fra 2D til 1D, slik at det kan plottes i en graf
+        plt.xticks(np.append(X.flatten(), fremtidige_år.flatten()),rotation=90)
+        plt.show()
+        
+        for år, pred in zip(fremtidige_år.flatten(), fremtidige_pred):
+            print(f"  År {år}: {pred:.1f} mm")
 
 
 
