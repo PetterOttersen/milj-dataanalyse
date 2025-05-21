@@ -13,7 +13,7 @@ def analyze_weather_data():
     # Leser data fra Excel-filen
     data = pd.read_csv(FILE_PATH)
     
-    # Konverterer tiden
+    # Konverterer tiden til datetime og justerer med hensyn på timeOffset
     data["referenceTime"] = pd.to_datetime(data["referenceTime"])
     data["timeOffset"] = pd.to_timedelta(data["timeOffset"])
     data["justertTid"] = data["referenceTime"] - data["timeOffset"]
@@ -50,7 +50,7 @@ def analyze_weather_data():
     median_temp = np.median(temperatur)
     standardavvik_temp = np.std(temperatur)
 
-    # Resultater
+    # Resultater i et dictionary
     resultater = {
         "korrelasjon": korrelasjon,
         "nedbør_statistikk": {
@@ -82,7 +82,7 @@ def analyze_weather_data():
 
 
 def temperatur(resultater):
-        #Data fra analyse
+        #Data fra analyze_weather_data
         temp_tider_sortert = resultater["sorterte_data"]["temperatur"]["tider"]
         temperatur_sortert = resultater["sorterte_data"]["temperatur"]["verdier"]
         gjennomsnitts_temp = resultater["temperatur_statistikk"]["gjennomsnitt"]
@@ -118,7 +118,7 @@ def temperatur(resultater):
 
 
 def nedbør(resultater):
-        #Data fra analyse
+        #Data fra analyze_weather_data
         nedbør_tider_sortert = resultater["sorterte_data"]["nedbør"]["tider"]
         nedbør_sortert = resultater["sorterte_data"]["nedbør"]["verdier"]
         gjennomsnitts_nedbør = resultater["nedbør_statistikk"]["gjennomsnitt"]
@@ -154,7 +154,7 @@ def nedbør(resultater):
         
 
 def sammenlign_temp_nedbør(resultater):
-    # Data fra analyse
+    # Data fra analyze_weather_data
     temp_data = resultater["temp_data"]
     nedbør_data = resultater["nedbør_data"]
 
@@ -162,7 +162,7 @@ def sammenlign_temp_nedbør(resultater):
     temp_årlig = temp_data.groupby(pd.to_datetime(temp_data['justertTid']).dt.year)['value'].mean()
     nedbør_årlig = nedbør_data.groupby(pd.to_datetime(nedbør_data['justertTid']).dt.year)['value'].mean()
 
-    # Fjern år med manglende data (f.eks. 2012)
+    # Fjerner 2012 pga. kun data fra 1 dag
     temp_årlig = temp_årlig[1:]
     nedbør_årlig = nedbør_årlig[1:]
 
