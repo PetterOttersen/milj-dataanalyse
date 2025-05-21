@@ -90,8 +90,7 @@ class plots:
 
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-
-
+from sklearn.linear_model import LinearRegression
 
 
 class plots_part_2: 
@@ -99,11 +98,39 @@ class plots_part_2:
     def __init__(self, df): #ai
         self.df = df #ai
     
-    def 
-    x =  self.df.groupby("år")
-    y = self.df.groupby("verdi")
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
-    scaler = StandardScaler()
+    def linreg(self):
+        df_groupby = self.df.groupby('år')['verdi'].mean().reset_index() #ai
+        x =  df_groupby[["år"]] #ai
+        y = df_groupby["verdi"] 
+        x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
+        scaler = StandardScaler()
+        x_train_scaled = scaler.fit_transform(x_train)
+        x_test_scaled = scaler.transform(x_test)
+        model = LinearRegression()
+        model.fit(x_train_scaled, y_train)
+        y_pred = model.predict(x_test_scaled)
+
+        plt.scatter(x_test, y_test, label="Test data")
+        plt.plot(x_test, y_pred, color="red", label="Prediction")
+        plt.xlabel("År")
+        plt.ylabel("Verdi")
+        plt.title("Lineær regresjon")
+        plt.legend()
+        plt.grid(True)
+        plt.show()
+
+    
+    
+
+
+    
+
+
+
+
+
+
+
 
 
 
