@@ -178,7 +178,7 @@ class analyse_og_visualisere:
     # Visualiser sammenhengen
         plt.figure(figsize=(10, 6))
         plt.scatter(temp_årlig, nedbør_årlig, color='blue', alpha=0.7)
-        plt.title("Sammenheng mellom temperatur og nedbør")
+        plt.title("Figur 5: Sammenheng mellom temperatur og nedbør")
         plt.xlabel("Gjennomsnittstemperatur (°C)")
         plt.ylabel("Gjennomsnittsnedbør (mm)")
         plt.grid(True)
@@ -191,6 +191,10 @@ class analyse_og_visualisere:
         
         # Grupper etter år og beregn årlig gjennomsnitt
         nedbør_årlig = nedbør_data.groupby(pd.to_datetime(nedbør_data['justertTid']).dt.year)['value'].mean()
+        if nedbør_data['value'].isna().any():
+            print(f"Advarsel: {nedbør_data['value'].isna().sum()} manglende verdier blir fylt med årsmiddel")
+            nedbør_data['value'] = nedbør_data.groupby('År')['value'].transform('mean').fillna(nedbør_data['value'])
+        # Fjerner 2012 pga. kun data fra 1 dag
         nedbør_årlig_uten_2012 = nedbør_årlig[1:]
         
         # Forbered data for modellering
@@ -221,7 +225,7 @@ class analyse_og_visualisere:
         for år, pred in zip(fremtidige_år.flatten(), fremtidige_pred):
             plt.text(år, pred, f'{pred:.1f}', ha='center', va='bottom')
         
-        plt.title('Årlig gjennomsnittlig nedbør med lineær regresjon')
+        plt.title('Figur 6: Årlig gjennomsnittlig nedbør med lineær regresjon')
         plt.xlabel('År')
         plt.ylabel('Gjennomsnittlig nedbør (mm)')
         plt.legend()
