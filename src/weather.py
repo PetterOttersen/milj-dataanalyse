@@ -178,7 +178,7 @@ class analyse_og_visualisere:
     # Visualiser sammenhengen
         plt.figure(figsize=(10, 6))
         plt.scatter(temp_årlig, nedbør_årlig, color='blue', alpha=0.7)
-        plt.title("Sammenheng mellom temperatur og nedbør")
+        plt.title("Figur 5: Sammenheng mellom temperatur og nedbør")
         plt.xlabel("Gjennomsnittstemperatur (°C)")
         plt.ylabel("Gjennomsnittsnedbør (mm)")
         plt.grid(True)
@@ -189,8 +189,14 @@ class analyse_og_visualisere:
     def prediksjonsanalyse_nedbør_lineær(self, resultater):
         nedbør_data = resultater["nedbør_data"]
         
+        #Håndterer manglende verdier
+        if nedbør_data['value'].isna().any():
+            print(f"Advarsel: {nedbør_data['value'].isna().sum()} manglende verdier blir fylt med årsmiddel")
+            nedbør_data['value'] = nedbør_data.groupby('År')['value'].transform('mean').fillna(nedbør_data['value'])
         # Grupper etter år og beregn årlig gjennomsnitt
         nedbør_årlig = nedbør_data.groupby(pd.to_datetime(nedbør_data['justertTid']).dt.year)['value'].mean()
+        # Fjerner 2012 pga. kun data fra 1 dag
+
         nedbør_årlig_uten_2012 = nedbør_årlig[1:]
         
         # Forbered data for modellering
@@ -221,7 +227,7 @@ class analyse_og_visualisere:
         for år, pred in zip(fremtidige_år.flatten(), fremtidige_pred):
             plt.text(år, pred, f'{pred:.1f}', ha='center', va='bottom')
         
-        plt.title('Årlig gjennomsnittlig nedbør med lineær regresjon')
+        plt.title('Figur 6: Årlig gjennomsnittlig nedbør med lineær regresjon')
         plt.xlabel('År')
         plt.ylabel('Gjennomsnittlig nedbør (mm)')
         plt.legend()
@@ -232,6 +238,62 @@ class analyse_og_visualisere:
         
         for år, pred in zip(fremtidige_år.flatten(), fremtidige_pred):
             print(f"  År {år}: {pred:.1f} mm")
+
+
+
+    def prediksjonsanalyse_temperatur_lineær(self, resultater):
+        temp_data = resultater["temp_data"]
+        
+
+        if temp_data['value'].isna().any():
+            print(f"Advarsel: {temp_data['value'].isna().sum()} manglende verdier blir fylt med årsmiddel")
+            temp_data['value'] = temp_data.groupby('År')['value'].transform('mean').fillna(temp_data['value'])
+
+        # Grupper etter år og beregn årlig gjennomsnitt
+        temperatur_årlig = temp_data.groupby(pd.to_datetime(temp_data['justertTid']).dt.year)['value'].mean()
+        # Fjerner 2012 pga. kun data fra 1 dag
+        temperatur_årlig_uten_2012 = temperatur_årlig[1:]
+        
+        # Forbered data for modellering
+        X = temperatur_årlig_uten_2012.index.values.reshape(-1, 1)
+        y = temperatur_årlig_uten_2012.values  
+        
+        # Tren lineær regresjonsmodell
+        model = LinearRegression()
+        model.fit(X, y)
+        
+        y_pred = model.predict(X)
+        
+        plt.figure(figsize=(12, 6))
+        
+        # Plot faktisk nedbør
+        plt.bar(X.flatten(), y, color='blue', label='Faktisk temperatur')
+
+        #
+        # Legger til antall år frem i tid
+        antall_fremtidige_år = 10  
+        siste_år = X[-1][0]
+        fremtidige_år = np.array([siste_år + i for i in range(1, antall_fremtidige_år + 1)]).reshape(-1, 1)
+        fremtidige_pred = model.predict(fremtidige_år)
+
+        plt.bar(fremtidige_år.flatten(), fremtidige_pred, color='green', label='prediktert temperatur')
+        #Plot regresjonslinje
+        plt.plot(np.concatenate([X.flatten(),fremtidige_år.flatten()]), np.concatenate([y_pred,fremtidige_pred]), color='red', linewidth=2, label='Lineær regresjon')
+
+        for år, pred in zip(fremtidige_år.flatten(), fremtidige_pred):
+            plt.text(år, pred, f'{pred:.1f}', ha='center', va='bottom')
+        
+        plt.title('Figur 6: Årlig gjennomsnittlig temperatur med lineær regresjon')
+        plt.xlabel('År')
+        plt.ylabel('Gjennomsnittlig temperatur (°C)')
+        plt.legend()
+        plt.grid(True)
+        #flatten gjør fra 2D til 1D, slik at det kan plottes i en graf
+        plt.xticks(np.append(X.flatten(), fremtidige_år.flatten()),rotation=90)
+        plt.show()
+        
+        for år, pred in zip(fremtidige_år.flatten(), fremtidige_pred):
+            print(f"  År {år}: {pred:.1f} °C")
 
 
 
