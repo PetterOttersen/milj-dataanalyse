@@ -28,7 +28,9 @@ class plots:
         self.df = df #ai
 
     def plot_co2_per_year_mean(self):
+        
         co2_per_year_mean = self.df.groupby('år')['verdi'].mean() #gjennomsnittlige utslipp per år #ai
+        
         plt.figure(figsize=(10, 6))
         co2_per_year_mean.plot(kind='bar', title="CO2-utslipp over tid (gjennomsnitt)")
         plt.ylabel("Utslipp (1000 tonn CO2-ekv.)")
@@ -39,7 +41,9 @@ class plots:
 
 
     def plot_co2_per_year_median(self):
+        
         co2_per_year_median = self.df.groupby('år')['verdi'].median() #median av utslipp per år
+        
         plt.figure(figsize=(10, 6))
         co2_per_year_median.plot(kind='bar', title="CO2-utslipp over tid (median)")
         plt.ylabel("Utslipp (1000 tonn CO2-ekv.)")
@@ -49,7 +53,9 @@ class plots:
 
 
     def plot_co2_per_source_median(self):
+        
         co2_per_source_median = self.df.groupby('kilde')['verdi'].mean() #medi
+        
         plt.figure(figsize=(10, 6))
         co2_per_source_median.plot(kind='bar', title="CO2-utslipp per kilde (median)")
         plt.ylabel("Utslipp (1000 tonn CO2-ekv.)")
@@ -58,7 +64,9 @@ class plots:
         plt.show()
 
     def plot_co2_per_year_std(self):
+        
         co2_per_year_std = self.df.groupby('år')['verdi'].std() 
+        
         plt.figure(figsize=(10, 6))
         co2_per_year_std.plot(kind='bar', title="CO2-utslipp per kilde (standardavvik)")
         plt.ylabel("Utslipp (1000 tonn CO2-ekv.)")
@@ -68,7 +76,9 @@ class plots:
         return co2_per_year_std
 
     def comparisons(self,co2_per_year_std, co2_per_year_mean):
+        
         CV = co2_per_year_std / co2_per_year_mean
+        
         plt.figure(figsize=(10, 3))
         plt.grid(True)
         CV.plot(title="CO2-utslipp over tid (median)")
@@ -77,8 +87,10 @@ class plots:
         plt.show()
 
     def plot_co2_source_year_hm(self):
+        
         sns.set_theme()
         co2_source_year_hm = (self.df.pivot(index="kilde", columns="år", values="verdi"))
+        
         f, ax = plt.subplots(figsize=(9, 6))
         sns.heatmap(co2_source_year_hm, annot=True, fmt=".0f", linewidths=.5, ax=ax)
         plt.xlabel("År",size = 11)        
@@ -101,27 +113,47 @@ class plots_part_2:
         self.df = df #ai
     
     def linreg_train_test(self):
+        #
         df_groupby = self.df.groupby('år')['verdi'].mean().reset_index() #ai
+        
         X =  df_groupby[["år"]] #ai
         y = df_groupby["verdi"] 
+        
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.50, random_state=42)
         scaler = StandardScaler()
         X_train_scaled = scaler.fit_transform(X_train)
         X_test_scaled = scaler.transform(X_test)
-        model = LinearRegression()
-        model.fit(X_train_scaled, y_train)
-        y_pred = model.predict(X_test_scaled)
-        r2 = r2_score(y_test, y_pred)
-        print("r2 = ",r2)
+       
+        model_train = LinearRegression()
+        model_train.fit(X_train_scaled, y_train)
+       
+        y_train_pred = model_train.predict(X_test_scaled)
 
+        
+
+        model = LinearRegression()
+        model.fit(X, y)
+
+        y_pred = model.predict(X)
+
+        plt.plot(X, y_pred, color="green", label="Prediction")
         plt.scatter(X_test, y_test, label="Test data")
-        plt.plot(X_test, y_pred, color="red", label="Prediction")
+        plt.plot(X_test, y_train_pred, color="red", label="Prediction")
         plt.xlabel("År")
         plt.ylabel("Verdi")
         plt.title("Lineær regresjon")
         plt.legend()
         plt.grid(True)
         plt.show()
+
+        r2 = r2_score(y_test, y_train_pred)
+        print("r2 = ",r2)
+   
+   
+   
+   
+   
+   
    
     def linreg_test(self):
         df_groupby = self.df.groupby('år')['verdi'].mean().reset_index() #ai
@@ -130,7 +162,10 @@ class plots_part_2:
         scaler = StandardScaler()
         model = LinearRegression()
         model.fit(X, y)
-        plt.plot(X, y, color="red", label="Prediction")
+
+        y_pred = model.predict(X)
+
+        plt.plot(X, y_pred, color="red", label="Prediction")
         plt.xlabel("År")
         plt.ylabel("Verdi")
         plt.title("Lineær regresjon")
