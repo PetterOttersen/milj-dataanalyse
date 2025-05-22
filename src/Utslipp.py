@@ -100,7 +100,7 @@ class plots_part_2:
     def __init__(self, df): #ai
         self.df = df #ai
     
-    def linreg(self):
+    def linreg_train_test(self):
         df_groupby = self.df.groupby('år')['verdi'].mean().reset_index() #ai
         X =  df_groupby[["år"]] #ai
         y = df_groupby["verdi"] 
@@ -114,7 +114,6 @@ class plots_part_2:
         r2 = r2_score(y_test, y_pred)
         print("r2 = ",r2)
 
-
         plt.scatter(X_test, y_test, label="Test data")
         plt.plot(X_test, y_pred, color="red", label="Prediction")
         plt.xlabel("År")
@@ -123,8 +122,26 @@ class plots_part_2:
         plt.legend()
         plt.grid(True)
         plt.show()
+   
+    def linreg_test(self):
+        df_groupby = self.df.groupby('år')['verdi'].mean().reset_index() #ai
+        X =  df_groupby[["år"]] #ai
+        y = df_groupby["verdi"]
+        scaler = StandardScaler()
+        model = LinearRegression()
+        model.fit(X, y)
+        plt.plot(X, y, color="red", label="Prediction")
+        plt.xlabel("År")
+        plt.ylabel("Verdi")
+        plt.title("Lineær regresjon")
+        plt.legend()
+        plt.grid(True)
+        plt.show()
+
+
 
     
+ 
     
 
 

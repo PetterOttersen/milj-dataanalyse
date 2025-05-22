@@ -13,6 +13,8 @@ Predektiv analyse (weather)
 Interaktive visualiseringer (weather)
 Readme for fremstilling
 Readme for src
+Kildeliste
+
 
 
 
