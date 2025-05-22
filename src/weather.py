@@ -267,18 +267,19 @@ class analyse_og_visualisere:
         plt.figure(figsize=(12, 6))
         
         # Plot faktisk nedbør
-        plt.bar(X, y, color='blue', label='Faktisk temperatur')
-        plt.plot(X, y, color='blue', linewidth=0.5)
-        # Plot regresjonslinje
-        plt.plot(X, y_pred, color='red', linewidth=2, label='Lineær regresjon')
-        
+        plt.bar(X.flatten(), y, color='blue', label='Faktisk temperatur')
+
+        #
         # Legger til antall år frem i tid
         antall_fremtidige_år = 10  
         siste_år = X[-1][0]
         fremtidige_år = np.array([siste_år + i for i in range(1, antall_fremtidige_år + 1)]).reshape(-1, 1)
         fremtidige_pred = model.predict(fremtidige_år)
-        plt.scatter(fremtidige_år, fremtidige_pred, color='green', marker='x', s=100, label='Fremtidige prediksjoner')
-        
+
+        plt.bar(fremtidige_år.flatten(), fremtidige_pred, color='green', label='prediktert temperatur')
+        #Plot regresjonslinje
+        plt.plot(np.concatenate([X.flatten(),fremtidige_år.flatten()]), np.concatenate([y_pred,fremtidige_pred]), color='red', linewidth=2, label='Lineær regresjon')
+
         for år, pred in zip(fremtidige_år.flatten(), fremtidige_pred):
             plt.text(år, pred, f'{pred:.1f}', ha='center', va='bottom')
         
