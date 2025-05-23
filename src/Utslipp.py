@@ -129,7 +129,6 @@ class plots_part_2:
        
         y_train_pred = model_train.predict(X_test_scaled)
 
-        
 
         model = LinearRegression()
         model.fit(X, y)
@@ -149,10 +148,29 @@ class plots_part_2:
         r2 = r2_score(y_test, y_train_pred)
         print("r2 = ",r2)
    
+
+    def barplot(self):
+        df_groupby = self.df.groupby('kilde')['verdi'].mean().reset_index() #mean
+        
+        X =  df_groupby[["kilde"]] #ai
+        y = df_groupby["verdi"] 
+
+        model = LinearRegression()
+        model.fit(X, y)
+
+        y_pred = model.predict(X)
+       
+        plt.plot(x = X, y = y,kind = "bar")
+        plt.xlabel("År")
+        plt.ylabel("Verdi")
+        plt.title("Linreg")
+        plt.legend()
+        plt.grid(True)
+        plt.show()
    
    
    
-   
+"""
    
    
     def linreg_test(self):
@@ -173,7 +191,7 @@ class plots_part_2:
         plt.grid(True)
         plt.show()
 
-
+"""
 
     
  
