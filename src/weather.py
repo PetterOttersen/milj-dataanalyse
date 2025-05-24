@@ -3,6 +3,9 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
+from ipywidgets import interact, widgets
+from IPython.display import display
+
 
 
 
@@ -208,37 +211,53 @@ class analyse_og_visualisere:
         model.fit(X, y)
         
         y_pred = model.predict(X)
-        
-        plt.figure(figsize=(12, 6))
-        
-        # Plot faktisk nedbør
-        plt.scatter(X, y, color='blue', label='Faktisk nedbør')
-        
-        
-        # Legger til antall år frem i tid
-        antall_fremtidige_år = int(input("Hvor mange år frem i tid ønsker du å predikere? "))  
-        siste_år = X[-1][0]
-        fremtidige_år = np.array([siste_år + i for i in range(1, antall_fremtidige_år + 1)]).reshape(-1, 1)
-        fremtidige_pred = model.predict(fremtidige_år)
-        plt.scatter(fremtidige_år, fremtidige_pred, color='blue', marker='d', s=100, label='Fremtidige prediksjoner')
 
-        # Plot regresjonslinje
-        plt.plot(np.concatenate([X.flatten(),fremtidige_år.flatten()]), np.concatenate([y_pred, fremtidige_pred]), color='red', linewidth=2, label='Lineær regresjon')
+        siste_år = int(X[-1][0])
         
-        for år, pred in zip(fremtidige_år.flatten(), fremtidige_pred):
-            plt.text(år, pred, f'{pred:.1f}', ha='right', va='bottom')
+        def oppdater_plot(slutt_år):
+
+            antall_fremtidige_år=slutt_år-siste_år if slutt_år>siste_år else 0
+
+            plt.figure(figsize=(12, 6))
         
-        plt.title('Figur 6: Årlig gjennomsnittlig nedbør med lineær regresjon')
-        plt.xlabel('År')
-        plt.ylabel('Gjennomsnittlig nedbør (mm)')
-        plt.legend()
-        plt.grid(True)
-        #flatten gjør fra 2D til 1D, slik at det kan plottes i en graf
-        plt.xticks(np.append(X.flatten(), fremtidige_år.flatten()),rotation=90)
-        plt.show()
-        
-        for år, pred in zip(fremtidige_år.flatten(), fremtidige_pred):
-            print(f"  År {år}: {pred:.1f} mm")
+            # Plot faktisk nedbør
+            plt.scatter(X, y, color='blue', label='Faktisk nedbør')
+            
+             
+            fremtidige_år = np.array([siste_år + i for i in range(1, antall_fremtidige_år + 1)]).reshape(-1, 1)
+            fremtidige_pred = model.predict(fremtidige_år)
+            plt.scatter(fremtidige_år, fremtidige_pred, color='blue', marker='x', s=100, label='Fremtidige prediksjoner')
+
+            # Plot regresjonslinje
+            plt.plot(np.concatenate([X.flatten(),fremtidige_år.flatten()]), np.concatenate([y_pred, fremtidige_pred]), color='red', linewidth=2, label='Lineær regresjon')
+            
+            for år, pred in zip(fremtidige_år.flatten(), fremtidige_pred):
+                plt.text(år, pred, f'{pred:.1f}', ha='right', va='bottom')
+            
+            plt.title('Figur 6: Årlig gjennomsnittlig nedbør med lineær regresjon')
+            plt.xlabel('År')
+            plt.ylabel('Gjennomsnittlig nedbør (mm)')
+            plt.legend()
+            plt.grid(True)
+            #flatten gjør fra 2D til 1D, slik at det kan plottes i en graf
+            plt.xticks(np.append(X.flatten(), fremtidige_år.flatten()),rotation=90)
+            plt.show()
+            
+            for år, pred in zip(fremtidige_år.flatten(), fremtidige_pred):
+                print(f"  År {år}: {pred:.1f} mm")
+
+        # Interaktiv widget for antall fremtidige år
+        interact(
+        oppdater_plot, 
+        slutt_år=widgets.IntSlider(
+            value=siste_år+5,
+            min=siste_år+1,
+            max=siste_år+20,
+            step=1,
+            description='Velg år:',
+            continuous_update=False
+        )
+    )
 
 
 
@@ -264,39 +283,50 @@ class analyse_og_visualisere:
         model.fit(X, y)
         
         y_pred = model.predict(X)
+
+        siste_år = int(X[-1][0])
+
+        def oppdater_plot(slutt_år):
+
+            antall_fremtidige_år=slutt_år-siste_år if slutt_år>siste_år else 0
+            plt.figure(figsize=(12, 6))
+            
+            # Plot faktisk temperatur
+            plt.bar(X.flatten(), y, color='gray', label='Faktisk temperatur')
+            
+            
+            fremtidige_år = np.array([siste_år + i for i in range(1, antall_fremtidige_år + 1)]).reshape(-1, 1)
+            fremtidige_pred = model.predict(fremtidige_år)
+
+            plt.bar(fremtidige_år.flatten(), fremtidige_pred, color='blue', label='Prediktert temperatur')
+            
+            # Plot regresjonslinje
+            plt.plot(np.concatenate([X.flatten(), fremtidige_år.flatten()]), np.concatenate([y_pred, fremtidige_pred]), color='red', linewidth=2, label='Lineær regresjon')
+
+            for år, pred in zip(fremtidige_år.flatten(), fremtidige_pred):
+                plt.text(år, pred, f'{pred:.1f}', ha='center', va='bottom')
+            
+            plt.title('Figur 6: Årlig gjennomsnittlig temperatur med lineær regresjon')
+            plt.xlabel('År')
+            plt.ylabel('Gjennomsnittlig temperatur (°C)')
+            plt.legend()
+            plt.grid(True)
+            #flatten gjør fra 2D til 1D, slik at det kan plottes i en graf
+            plt.xticks(np.append(X.flatten(), fremtidige_år.flatten()),rotation=90)
+            plt.show()
+            
+            for år, pred in zip(fremtidige_år.flatten(), fremtidige_pred):
+                print(f"  År {år}: {pred:.1f} °C")
         
-        plt.figure(figsize=(12, 6))
-        
-        # Plot faktisk nedbør
-        plt.bar(X.flatten(), y, color='gray', label='Faktisk temperatur')
-
-        #
-        # Legger til antall år frem i tid
-        antall_fremtidige_år = int(input("Hvor mange år frem i tid ønsker du å predikere? ")) 
-        siste_år = X[-1][0]
-        fremtidige_år = np.array([siste_år + i for i in range(1, antall_fremtidige_år + 1)]).reshape(-1, 1)
-        fremtidige_pred = model.predict(fremtidige_år)
-
-        plt.bar(fremtidige_år.flatten(), fremtidige_pred, color='blue', label='prediktert temperatur')
-        #Plot regresjonslinje
-        plt.plot(np.concatenate([X.flatten(),fremtidige_år.flatten()]), np.concatenate([y_pred,fremtidige_pred]), color='red', linewidth=2, label='Lineær regresjon')
-
-        for år, pred in zip(fremtidige_år.flatten(), fremtidige_pred):
-            plt.text(år, pred, f'{pred:.1f}', ha='center', va='bottom')
-        
-        plt.title('Figur 6: Årlig gjennomsnittlig temperatur med lineær regresjon')
-        plt.xlabel('År')
-        plt.ylabel('Gjennomsnittlig temperatur (°C)')
-        plt.legend()
-        plt.grid(True)
-        #flatten gjør fra 2D til 1D, slik at det kan plottes i en graf
-        plt.xticks(np.append(X.flatten(), fremtidige_år.flatten()),rotation=90)
-        plt.show()
-        
-        for år, pred in zip(fremtidige_år.flatten(), fremtidige_pred):
-            print(f"  År {år}: {pred:.1f} °C")
-
-
-
-
-
+        # Interaktiv widget for antall fremtidige år
+        interact(
+        oppdater_plot, 
+        slutt_år=widgets.IntSlider(
+            value=siste_år+5,
+            min=siste_år+1,
+            max=siste_år+20,
+            step=1,
+            description='Velg år:',
+            continuous_update=False
+        )
+    )
