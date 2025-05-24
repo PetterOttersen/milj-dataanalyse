@@ -216,7 +216,7 @@ class analyse_og_visualisere:
         
         
         # Legger til antall år frem i tid
-        antall_fremtidige_år = 10  
+        antall_fremtidige_år = int(input("Hvor mange år frem i tid ønsker du å predikere? "))  
         siste_år = X[-1][0]
         fremtidige_år = np.array([siste_år + i for i in range(1, antall_fremtidige_år + 1)]).reshape(-1, 1)
         fremtidige_pred = model.predict(fremtidige_år)
@@ -272,7 +272,7 @@ class analyse_og_visualisere:
 
         #
         # Legger til antall år frem i tid
-        antall_fremtidige_år = 10  
+        antall_fremtidige_år = int(input("Hvor mange år frem i tid ønsker du å predikere? ")) 
         siste_år = X[-1][0]
         fremtidige_år = np.array([siste_år + i for i in range(1, antall_fremtidige_år + 1)]).reshape(-1, 1)
         fremtidige_pred = model.predict(fremtidige_år)
