@@ -152,7 +152,7 @@ class plots_part_2:
     def barplot(self):
         df_groupby = self.df.groupby('kilde')['verdi'].mean().reset_index() #mean
         
-        X =  df_groupby[["kilde"]] #ai
+        X =  pd.get_dummies(df_groupby[["kilde"]]) #ai
         y = df_groupby["verdi"] 
 
         model = LinearRegression()
@@ -160,7 +160,7 @@ class plots_part_2:
 
         y_pred = model.predict(X)
        
-        plt.plot(x = X, y = y,kind = "bar")
+        plt.bar(x=df_groupby["kilde"], height = y_pred,color = "magenta") #ai
         plt.xlabel("År")
         plt.ylabel("Verdi")
         plt.title("Linreg")
