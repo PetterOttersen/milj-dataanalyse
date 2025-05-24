@@ -150,7 +150,8 @@ class plots_part_2:
    
 
     def barplot(self):
-        df_groupby = self.df.groupby('kilde')['verdi'].mean().reset_index() #mean
+        df_groupby = self.df.groupby('kilde')['verdi'].mean().reset_index()#mean
+        
         
         X =  pd.get_dummies(df_groupby[["kilde"]]) #ai
         y = df_groupby["verdi"] 
@@ -159,17 +160,20 @@ class plots_part_2:
         model.fit(X, y)
 
         y_pred = model.predict(X)
-       
-        plt.bar(x=df_groupby["kilde"], height = y_pred,color = "magenta") #ai
-        plt.xlabel("År")
+
+        plt.figure(figsize=(12, 6))
+        sns.barplot(x="kilde",y= y_pred,data = df_groupby,color = "magenta") #ai
+        plt.xticks(rotation=45, ha = "right")
+        plt.xlabel("Kilde")
         plt.ylabel("Verdi")
-        plt.title("Linreg")
-        plt.legend()
+        plt.title("Linreg av Kilde og Verdi")
+        plt.tight_layout()
         plt.grid(True)
         plt.show()
-   
-   
-   
+
+
+
+
 """
    
    
