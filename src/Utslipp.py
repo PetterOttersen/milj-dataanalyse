@@ -162,7 +162,7 @@ class plots_part_2:
         y_pred = model.predict(X)
 
         plt.figure(figsize=(12, 6))
-        sns.barplot(x="kilde",y= y_pred,data = df_groupby,color = "magenta") #ai
+        sns.barplot(x="kilde",y= y_pred,data = df_groupby,color = "magenta") 
         plt.xticks(rotation=45, ha = "right")
         plt.xlabel("Kilde")
         plt.ylabel("Verdi")
@@ -170,6 +170,74 @@ class plots_part_2:
         plt.tight_layout()
         plt.grid(True)
         plt.show()
+    
+    def futureplot(self, future_years = [2025,2026,2027,2028,2029,2030] ):
+        df_groupby = self.df.groupby('år')['verdi'].mean().reset_index() #ai
+        
+        X =  df_groupby[["år"]] #ai
+        y = df_groupby["verdi"] 
+        
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.50, random_state=42)
+        scaler = StandardScaler()
+        X_train_scaled = scaler.fit_transform(X_train)
+        X_test_scaled = scaler.transform(X_test)
+       
+        model_train = LinearRegression()
+        model_train.fit(X_train_scaled, y_train)
+        y_train_pred = model_train.predict(X_test_scaled)
+
+
+        scaler_full = StandardScaler() #ai
+        X_scaled_full = scaler_full.fit_transform(X)
+        model_full = LinearRegression()
+        model_full.fit(X_scaled_full, y)
+
+        future_df = pd.DataFrame({"år": future_years})
+        future_scaled = scaler_full.transform(future_df)
+        future_preds = model_full.predict(future_scaled)#ai
+
+        plt.figure(figsize=(10, 6))
+        plt.plot(X, model_full.predict(X_scaled_full), color="green", label="Historisk trend")
+        plt.plot(future_df, future_preds, color="red", linestyle="--", marker="x", label="Fremtidsprediksjon")
+
+        plt.axvline(x=max(X["år"]), linestyle=":", color="gray")
+        plt.xlabel("År")
+        plt.ylabel("Verdi")
+        plt.title("Lineær regresjon med fremtidige prediksjoner")
+        plt.legend()
+        plt.grid(True)
+        plt.tight_layout()
+        plt.show()
+
+from sklearn.impute import SimpleImputer
+
+
+class missins_values:
+    def __init__(self, df): 
+        self.df = df 
+
+    def plot_missing_data(self):
+        
+        df_groupby = self.df.groupby('år')['verdi'].mean().reset_index() #ai
+
+        complete_cases = self.df.dropna()
+        incomplete_cases = self.df[df.isnull().any(axis=1)]
+
+        imputer = SimpleImputer(strategy='mean')
+        X_imputed = imputer.fit_transform(df[['X1', 'X2']])
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
