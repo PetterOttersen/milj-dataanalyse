@@ -228,19 +228,21 @@ class analyse_og_visualisere:
         plt.grid(True)
 
 
-    
+
+
+
 
     def prediksjonsanalyse_nedbør_lineær(self, resultater):
         nedbør_data = resultater["nedbør_data"]
         
-        #Håndterer manglende verdier
+        # Håndterer manglende verdier
         if nedbør_data['value'].isna().any():
             print(f"Advarsel: {nedbør_data['value'].isna().sum()} manglende verdier blir fylt med årsmiddel")
             nedbør_data['value'] = nedbør_data.groupby('År')['value'].transform('mean').fillna(nedbør_data['value'])
+        
         # Grupper etter år og beregn årlig gjennomsnitt
         nedbør_årlig = nedbør_data.groupby(pd.to_datetime(nedbør_data['justertTid']).dt.year)['value'].mean()
         # Fjerner 2012 pga. kun data fra 1 dag
-
         nedbør_årlig_uten_2012 = nedbør_årlig[1:]
         
         # Forbered data for modellering
@@ -250,58 +252,112 @@ class analyse_og_visualisere:
         # Tren lineær regresjonsmodell
         model = LinearRegression()
         model.fit(X, y)
-        
         y_pred = model.predict(X)
-
         siste_år = int(X[-1][0])
-        
-        def oppdater_plot(slutt_år):
 
-            antall_fremtidige_år=slutt_år-siste_år if slutt_år>siste_år else 0
-
-            plt.figure(figsize=(12, 6))
+        # Opprett FigureWidget
+        fig = go.FigureWidget()
         
-            # Plot faktisk nedbør
-            plt.scatter(X, y, color='blue', label='Faktisk nedbør')
+        # Legg til scatterplot for historiske data
+        fig.add_trace(go.Scatter(
+            x=X.flatten(),
+            y=y.round(2),
+            mode='markers',
+            name='Historisk nedbør',
+            marker=dict(color='blue', size=10),
+            text=[f'{value:.2f} mm' for value in y],
+            hoverinfo='text'
+        ))
+        
+        # Tomt spor for fremtidige prediksjoner
+        fig.add_trace(go.Scatter(
+            x=[],
+            y=[],
+            mode='markers',
+            name='Fremtidig prediksjon',
+            marker=dict(color='purple', size=12, symbol='diamond'),
+            text=[],
+            hoverinfo='text'
+        ))
+        
+        # Regresjonslinje
+        fig.add_trace(go.Scatter(
+            x=[],
+            y=[],
+            mode='lines',
+            name='Regresjon',
+            line=dict(color='red', width=3)
+        ))
+        
+        # Layout
+        fig.update_layout(
+            title='Årlig gjennomsnittlig nedbør med lineær regresjon',
+            xaxis_title='År',
+            yaxis_title='Nedbør (mm)',
+            hovermode='x unified',
+            showlegend=True,
+            xaxis=dict(tickangle=45),
+            height=600
+        )
+        
+        prediksjon_output = widgets.Output()
+
+        def oppdater_plot(slutt_år_nedbør):
+            antall_fremtidige_år = slutt_år_nedbør - siste_år if slutt_år_nedbør > siste_år else 0
             
-             
+            # Beregn prediksjoner
             fremtidige_år = np.array([siste_år + i for i in range(1, antall_fremtidige_år + 1)]).reshape(-1, 1)
-            fremtidige_pred = model.predict(fremtidige_år)
-            plt.scatter(fremtidige_år, fremtidige_pred, color='purple', s=100, label='Fremtidige prediksjoner')
+            fremtidige_pred = model.predict(fremtidige_år) if antall_fremtidige_år > 0 else np.array([])
+            
+            with prediksjon_output:
+                prediksjon_output.clear_output()
+                if antall_fremtidige_år > 0:
+                    print("Predikert nedbør:")
+                    for år, pred in zip(fremtidige_år.flatten(), fremtidige_pred):
+                        print(f"  År {år}: {pred:.2f} mm")
 
-            # Plot regresjonslinje
-            plt.plot(np.concatenate([X.flatten(),fremtidige_år.flatten()]), np.concatenate([y_pred, fremtidige_pred]), color='red', linewidth=2, label='Lineær regresjon')
-            
-            for år, pred in zip(fremtidige_år.flatten(), fremtidige_pred):
-                plt.text(år, pred, f'{pred:.1f}', ha='right', va='bottom')
-            
-            plt.title('Figur 6: Årlig gjennomsnittlig nedbør med lineær regresjon')
-            plt.xlabel('År')
-            plt.ylabel('Gjennomsnittlig nedbør (mm)')
-            plt.legend()
-            plt.grid(True)
-            #flatten gjør fra 2D til 1D, slik at det kan plottes i en graf
-            plt.xticks(np.append(X.flatten(), fremtidige_år.flatten()),rotation=90)
-            plt.show()
-            
-            for år, pred in zip(fremtidige_år.flatten(), fremtidige_pred):
-                print(f"  År {år}: {pred:.1f} mm")
+            # Oppdater figuren
+            with fig.batch_update():
+                # Predikerte data
+                if antall_fremtidige_år > 0:
+                    fig.data[1].x = fremtidige_år.flatten()
+                    fig.data[1].y = fremtidige_pred.round(2)
+                    fig.data[1].text = [f'{value:.2f} mm' for value in fremtidige_pred]
+                else:
+                    fig.data[1].x = []
+                    fig.data[1].y = []
+                    fig.data[1].text = []
+                
+                # Regresjonslinje
+                alle_år = np.concatenate([X.flatten(), fremtidige_år.flatten()]) if antall_fremtidige_år > 0 else X.flatten()
+                alle_pred = np.concatenate([y_pred, fremtidige_pred]) if antall_fremtidige_år > 0 else y_pred
+                fig.data[2].x = alle_år
+                fig.data[2].y = alle_pred.round(2)
+                
+                # Oppdater x-akse
+                fig.update_xaxes(tickvals=alle_år)
 
-        # Interaktiv widget for antall fremtidige år
-        interact(
-        oppdater_plot, 
-        slutt_år=widgets.IntSlider(
-            value=siste_år+5,
-            min=siste_år+1,
+        # Opprett og vis slider
+        slider = widgets.IntSlider(
+            value=siste_år,
+            min=siste_år,
             max=siste_år+20,
             step=1,
             description='Velg år:',
             continuous_update=False
         )
-    )
-
-
-
+        
+        display(widgets.VBox([
+            slider,
+            fig,
+            prediksjon_output
+        ]))
+        widgets.interactive(oppdater_plot, slutt_år_nedbør=slider)
+        
+   
+    
+        
+    
     def prediksjonsanalyse_temperatur_lineær(self, resultater):
         temp_data = resultater["temp_data"]
     
@@ -368,8 +424,8 @@ class analyse_og_visualisere:
         
         prediksjon_output = widgets.Output()
 
-        def oppdater_plot(slutt_år):
-            antall_fremtidige_år = slutt_år - siste_år if slutt_år > siste_år else 0
+        def oppdater_plot(slutt_år_temp):
+            antall_fremtidige_år = slutt_år_temp - siste_år if slutt_år_temp > siste_år else 0
             
             # Beregn prediksjoner
             fremtidige_år = np.array([siste_år + i for i in range(1, antall_fremtidige_år + 1)]).reshape(-1, 1)
@@ -419,6 +475,6 @@ class analyse_og_visualisere:
             fig,
             prediksjon_output
         ]))
-        widgets.interactive(oppdater_plot, slutt_år=slider)
+        widgets.interactive(oppdater_plot, slutt_år_temp=slider)
         
         

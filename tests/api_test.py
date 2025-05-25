@@ -1,7 +1,6 @@
 import unittest
 import requests
 
-#from dataCleaning import filter_weather
 
 endpoint = 'https://frost.met.no/observations/v0.jsonld'
 parameters = {
