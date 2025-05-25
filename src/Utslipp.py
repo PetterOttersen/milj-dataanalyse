@@ -16,8 +16,8 @@ def analyze_clean_utslipp_data(df):
     df.columns = ['kilde', 'energiprodukt', 'komponent', 'år', 'statistikkvariabel', 'verdi'] #ai #Dataen inneholder både heltall og tekstrenger. Datasettet ligger i grupper 
 
     df = df[['kilde', 'energiprodukt', 'komponent', 'år', 'verdi']] #ai
-    alle_kilder = df[df['kilde'].str.contains("0 Alle kilder", na=False)].index #retting av ai
-    df = df.drop(alle_kilder)
+    all_sources = df[df['kilde'].str.contains("0 Alle kilder", na=False)].index #retting av ai
+    df = df.drop(all_sources)
     return df
 
 #Rydder datasettet, beholder relevante kolonner og fjerner rader for å gjøre videre datahåndtering lettere
@@ -216,7 +216,17 @@ class missins_values:
     def __init__(self, df): 
         self.df = df 
 
-        
+    
+    def remove_random_data(self.df,):#ai
+        if if not 0 < andel < 1:
+        raise ValueError("Andel må være mellom 0 og 1.")
+    
+        df_renset = df.drop(df.sample(frac=andel, random_state=seed).index)
+        return df_renset 
+    
+    #ai
+
+
 
     def plot_missing_data(self):
         
@@ -225,27 +235,21 @@ class missins_values:
         complete_cases = self.df.dropna()
         incomplete_cases = self.df[df.isnull().any(axis=1)]
 
-
- 
-
         imputer = SimpleImputer(strategy='mean')
         df_imputed  = self.df.copy()
         df_imputed[['verdi']] = imputer.fit_transform(df_imputed.df["verdi"])
 
-        X_complete = df_imputed['verdi']
-        y_complete = df_imputed[('år')]
+        X = df_imputed['verdi']
+        y = df_imputed[('år')]
 
         model = LinearRegression
-        y_pred = model.predictt(X)
+        y_pred = model.predict(X)
 
 
-        self.df_imputed pd.DataFrame(X_imputed, columns=['verdi'])
 
         
 
-        X_final = self.df_imputed["verdi"]
         
-        final_model =LinearRegression().fit(X_final, y_complete)
 
 
 
