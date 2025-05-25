@@ -285,7 +285,7 @@ class analyse_og_visualisere:
             x=[],
             y=[],
             mode='lines',
-            name='Lineær regresjon',
+            name='Regresjon',
             line=dict(color='red', width=3)
         ))
         
