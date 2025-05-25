@@ -17,7 +17,7 @@ from IPython.display import display, HTML
 FILE_PATH = "../raw_data/data/Vaerdata.csv"
 
 class analyse_og_visualisere:
-
+    # Gir filstien til csv-filen
     def __init__(self, file_path="../raw_data/data/Vaerdata.csv"):
         self.FILE_PATH = file_path
 
@@ -117,14 +117,31 @@ class analyse_og_visualisere:
         temp_årlig = temp_data.groupby(pd.to_datetime(temp_data['justertTid']).dt.year)['value'].mean()
         temp_årlig_uten_2012=temp_årlig[1:]
 
-        fig2 = px.bar(
+        fig = go.FigureWidget()
+        
+        # Legg til alle spor på forhånd
+        fig.add_trace(go.Bar(
             x=temp_årlig_uten_2012.index,
             y=temp_årlig_uten_2012.values.round(2),
-            title="Figur 2: Gjennomsnittstemperatur gjennom årene",
-            labels={'x': 'År', 'y': 'Gjennomsnittstemperatur (°C)'},
+            name='Gjennomsnittstemperatur',
+            marker_color='Orange',
+            text=[f'{value:.2f}°C' for value in temp_årlig_uten_2012.values],
+            textposition='outside'
+        ))
+
+        # Layout
+        fig.update_layout(
+            title='Årlig gjennomsnittlig temperatur',
+            xaxis_title='År',
+            yaxis_title='Temperatur (°C)',
+            hovermode='x unified',
+            showlegend=True,
+            xaxis=dict(tickangle=45),
+            barmode='group',
+            height=600
         )
 
-        fig2.show()
+        display(fig)
         #Print statistikk
         print("Gjennomsnittstemperaturen er:",round(gjennomsnitts_temp,2),"°C")
         print("Median temperaturen er:",round(median_temp,2),"°C")
@@ -153,14 +170,31 @@ class analyse_og_visualisere:
         #Plot gjennomsnittsnedbør per år
         nedbør_årlig = nedbør_data.groupby(pd.to_datetime(nedbør_data['justertTid']).dt.year)['value'].mean()
         nedbør_årlig_uten_2012=nedbør_årlig[1:]
-        fig2 = px.bar(
+        fig = go.FigureWidget()
+        
+        # Legg til alle spor på forhånd
+        fig.add_trace(go.Bar(
             x=nedbør_årlig_uten_2012.index,
             y=nedbør_årlig_uten_2012.values.round(2),
-            title="Figur 2: Gjennomsnittstemperatur gjennom årene",
-            labels={'x': 'År', 'y': 'Gjennomsnittstemperatur (°C)'},
+            name='Gjennomsnittsnedbør',
+            marker_color='Blue',
+            text=[f'{value:.2f}mm' for value in nedbør_årlig_uten_2012.values],
+            textposition='outside'
+        ))
+
+        # Layout
+        fig.update_layout(
+            title='Årlig gjennomsnittlig nedbør',
+            xaxis_title='År',
+            yaxis_title='Nedbør (mm)',
+            hovermode='x unified',
+            showlegend=True,
+            xaxis=dict(tickangle=45),
+            barmode='group',
+            height=600
         )
 
-        fig2.show()
+        display(fig)
 
         #Print statistikk
         print("Gjennomsnittsnedbøren er:",round(gjennomsnitts_nedbør,2),"mm")
