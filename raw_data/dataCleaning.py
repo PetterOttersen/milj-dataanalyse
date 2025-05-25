@@ -12,6 +12,15 @@ df_trimmed_emissions = df_emissions[["kilde (aktivitet)", "energiprodukt", "komp
 
 
 def filter_weather(df_trimmed_weather):
+    """
+    Filtrerer dataen fra yr.no
+
+    Parametere: Dataframe med data fra yr.no
+
+    Returnerer Dataframe med data fra yr.no
+
+    """
+
     cutoff_quality = 3 #Dataen fra FROST API kommer med en kvalitetsparameter. Her velger vi å beholde dataen hvis kvaliteten er under 3
     filter = []
 
@@ -20,12 +29,20 @@ def filter_weather(df_trimmed_weather):
         filter.append(pd.isna(i) or str(i).isdigit() or int(i) > cutoff_quality)
 
     df_trimmed_weather = df_trimmed_weather[~pd.Series(filter, index=df_trimmed_weather.index)]
-    #~ sin funksjon er at istedenfor å beholde den gitte kolonna, forkaster den kolonna. ~ er feks. tilsvarende en not-gate fra kretsteknikk
+    #~ sin funksjon er at istedenfor å beholde den gitte kolonna, forkaster den kolonna. ~ er en bitwise-operator.
 
     return df_trimmed_weather
 
 
 def filter_emissions(df_trimmed_emissions):
+    """
+    Filtrerer dataen fra yr.no
+
+    Parametere: Dataframe med data fra yr.no
+
+    Returnerer Dataframe med data fra yr.no
+
+    """
     filter_condition = (
         (df_trimmed_emissions["år"].between(2013,2024)) &
         (df_trimmed_emissions["komponent"] == "K11 Karbondioksid (CO2)") & 
