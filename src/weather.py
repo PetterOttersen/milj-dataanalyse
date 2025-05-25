@@ -267,7 +267,7 @@ class analyse_og_visualisere:
              
             fremtidige_år = np.array([siste_år + i for i in range(1, antall_fremtidige_år + 1)]).reshape(-1, 1)
             fremtidige_pred = model.predict(fremtidige_år)
-            plt.scatter(fremtidige_år, fremtidige_pred, color='blue', marker='x', s=100, label='Fremtidige prediksjoner')
+            plt.scatter(fremtidige_år, fremtidige_pred, color='purple', s=100, label='Fremtidige prediksjoner')
 
             # Plot regresjonslinje
             plt.plot(np.concatenate([X.flatten(),fremtidige_år.flatten()]), np.concatenate([y_pred, fremtidige_pred]), color='red', linewidth=2, label='Lineær regresjon')
@@ -341,7 +341,7 @@ class analyse_og_visualisere:
             x=[],
             y=[],
             name='Prediksjon',
-            marker_color='blue',
+            marker_color='purple',
             text=[],
             textposition='outside'
         ))
