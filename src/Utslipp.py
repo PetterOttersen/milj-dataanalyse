@@ -267,6 +267,48 @@ class missing_values:
         plt.show()
 
 
+class research:
+    
+    def two_source_comparison(self, source1,source2, time):
+        source_year_value = self.df.groupby('kilde')('år')['verdi'].mean()
+        filtered = self.df[(self.df['år'] == year) & (self.df['kilde'].isin([source1, source2]))] #ai
+        
+        result = filtered.groupby('kilde')['verdi'].mean()
+
+        return result 
+    
+
+
+
+
+
+    
+    
+
+
+
+def plot_co2_per_year_mean(self):
+        
+        def __init__(self, df): 
+        self.df = df 
+
+        
+        co2_per_year_mean = self.df.groupby('år')['verdi'].mean() #gjennomsnittlige utslipp per år #ai
+        
+        plt.figure(figsize=(10, 6))
+        co2_per_year_mean.plot(kind='bar', title="CO2-utslipp over tid (gjennomsnitt)")
+        plt.ylabel("Utslipp (1000 tonn CO2-ekv.)")
+        plt.xlabel("År")
+        plt.tight_layout()
+        plt.show()
+        return co2_per_year_mean
+
+
+
+
+
+
+
 
         
 
