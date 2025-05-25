@@ -4,7 +4,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 from ipywidgets import interact, widgets
-from IPython.display import display
+import plotly.express as px
+import plotly.graph_objects as go
+from IPython.display import display, HTML
+
+
+
 
 
 
@@ -98,6 +103,7 @@ class analyse_og_visualisere:
         standardavvik_temp = resultater["temperatur_statistikk"]["standardavvik"]
         temp_data = resultater["temp_data"]
 
+
         #Plot temperatur over tid
         plt.figure(figsize=(15,5))
         plt.plot(temp_tider_sortert,temperatur_sortert) 
@@ -110,14 +116,15 @@ class analyse_og_visualisere:
         #Plot gjennomsnittstemperatur per år
         temp_årlig = temp_data.groupby(pd.to_datetime(temp_data['justertTid']).dt.year)['value'].mean()
         temp_årlig_uten_2012=temp_årlig[1:]
-        plt.figure(figsize=(15,5))
-        plt.bar(temp_årlig_uten_2012.index,temp_årlig_uten_2012.values)
-        plt.xticks(temp_årlig_uten_2012.index)
-        plt.title("Figur 2: Gjennomsnittstemperatur gjennom årene")
-        plt.xlabel("År")
-        plt.ylabel("Gjennomsnittstemperatur i °C")
-        plt.grid(True)
-        plt.show()
+
+        fig2 = px.bar(
+            x=temp_årlig_uten_2012.index,
+            y=temp_årlig_uten_2012.values.round(2),
+            title="Figur 2: Gjennomsnittstemperatur gjennom årene",
+            labels={'x': 'År', 'y': 'Gjennomsnittstemperatur (°C)'},
+        )
+
+        fig2.show()
         #Print statistikk
         print("Gjennomsnittstemperaturen er:",round(gjennomsnitts_temp,2),"°C")
         print("Median temperaturen er:",round(median_temp,2),"°C")
@@ -146,14 +153,14 @@ class analyse_og_visualisere:
         #Plot gjennomsnittsnedbør per år
         nedbør_årlig = nedbør_data.groupby(pd.to_datetime(nedbør_data['justertTid']).dt.year)['value'].mean()
         nedbør_årlig_uten_2012=nedbør_årlig[1:]
-        plt.figure(figsize=(15,5))
-        plt.bar(nedbør_årlig_uten_2012.index,nedbør_årlig_uten_2012.values)
-        plt.xticks(nedbør_årlig_uten_2012.index)
-        plt.title("Figur 4: Gjennomsnittsnedbør ulike årene")
-        plt.xlabel("År")
-        plt.ylabel("Gjennomsnittsnedbør i mm")
-        plt.grid(True)
-        plt.show()
+        fig2 = px.bar(
+            x=nedbør_årlig_uten_2012.index,
+            y=nedbør_årlig_uten_2012.values.round(2),
+            title="Figur 2: Gjennomsnittstemperatur gjennom årene",
+            labels={'x': 'År', 'y': 'Gjennomsnittstemperatur (°C)'},
+        )
+
+        fig2.show()
 
         #Print statistikk
         print("Gjennomsnittsnedbøren er:",round(gjennomsnitts_nedbør,2),"mm")
@@ -263,16 +270,14 @@ class analyse_og_visualisere:
 
     def prediksjonsanalyse_temperatur_lineær(self, resultater):
         temp_data = resultater["temp_data"]
-        
-
+    
         if temp_data['value'].isna().any():
             print(f"Advarsel: {temp_data['value'].isna().sum()} manglende verdier blir fylt med årsmiddel")
             temp_data['value'] = temp_data.groupby('År')['value'].transform('mean').fillna(temp_data['value'])
 
         # Grupper etter år og beregn årlig gjennomsnitt
         temperatur_årlig = temp_data.groupby(pd.to_datetime(temp_data['justertTid']).dt.year)['value'].mean()
-        # Fjerner 2012 pga. kun data fra 1 dag
-        temperatur_årlig_uten_2012 = temperatur_årlig[1:]
+        temperatur_årlig_uten_2012 = temperatur_årlig[1:]  # Fjerner 2012
         
         # Forbered data for modellering
         X = temperatur_årlig_uten_2012.index.values.reshape(-1, 1)
@@ -281,52 +286,105 @@ class analyse_og_visualisere:
         # Tren lineær regresjonsmodell
         model = LinearRegression()
         model.fit(X, y)
-        
         y_pred = model.predict(X)
-
         siste_år = int(X[-1][0])
 
-        def oppdater_plot(slutt_år):
-
-            antall_fremtidige_år=slutt_år-siste_år if slutt_år>siste_år else 0
-            plt.figure(figsize=(12, 6))
-            
-            # Plot faktisk temperatur
-            plt.bar(X.flatten(), y, color='gray', label='Faktisk temperatur')
-            
-            
-            fremtidige_år = np.array([siste_år + i for i in range(1, antall_fremtidige_år + 1)]).reshape(-1, 1)
-            fremtidige_pred = model.predict(fremtidige_år)
-
-            plt.bar(fremtidige_år.flatten(), fremtidige_pred, color='blue', label='Prediktert temperatur')
-            
-            # Plot regresjonslinje
-            plt.plot(np.concatenate([X.flatten(), fremtidige_år.flatten()]), np.concatenate([y_pred, fremtidige_pred]), color='red', linewidth=2, label='Lineær regresjon')
-
-            for år, pred in zip(fremtidige_år.flatten(), fremtidige_pred):
-                plt.text(år, pred, f'{pred:.1f}', ha='center', va='bottom')
-            
-            plt.title('Figur 6: Årlig gjennomsnittlig temperatur med lineær regresjon')
-            plt.xlabel('År')
-            plt.ylabel('Gjennomsnittlig temperatur (°C)')
-            plt.legend()
-            plt.grid(True)
-            #flatten gjør fra 2D til 1D, slik at det kan plottes i en graf
-            plt.xticks(np.append(X.flatten(), fremtidige_år.flatten()),rotation=90)
-            plt.show()
-            
-            for år, pred in zip(fremtidige_år.flatten(), fremtidige_pred):
-                print(f"  År {år}: {pred:.1f} °C")
+        # Opprett FigureWidget
+        fig = go.FigureWidget()
         
-        # Interaktiv widget for antall fremtidige år
-        interact(
-        oppdater_plot, 
-        slutt_år=widgets.IntSlider(
-            value=siste_år+5,
-            min=siste_år+1,
+        # Legg til alle spor på forhånd
+        fig.add_trace(go.Bar(
+            x=X.flatten(),
+            y=y.round(2),
+            name='Historisk',
+            marker_color='gray',
+            text=[f'{value:.2f}°C' for value in y],
+            textposition='outside'
+        ))
+        
+        # Tomme spor for prediksjoner og regresjonslinje
+        fig.add_trace(go.Bar(
+            x=[],
+            y=[],
+            name='Prediksjon',
+            marker_color='blue',
+            text=[],
+            textposition='outside'
+        ))
+        
+        fig.add_trace(go.Scatter(
+            x=[],
+            y=[],
+            mode='lines',
+            name='Regresjon',
+            line=dict(color='red', width=3)
+        ))
+        
+        # Layout
+        fig.update_layout(
+            title='Årlig gjennomsnittlig temperatur med lineær regresjon',
+            xaxis_title='År',
+            yaxis_title='Temperatur (°C)',
+            hovermode='x unified',
+            showlegend=True,
+            xaxis=dict(tickangle=45),
+            barmode='group',
+            height=600
+        )
+        
+        prediksjon_output = widgets.Output()
+
+        def oppdater_plot(slutt_år):
+            antall_fremtidige_år = slutt_år - siste_år if slutt_år > siste_år else 0
+            
+            # Beregn prediksjoner
+            fremtidige_år = np.array([siste_år + i for i in range(1, antall_fremtidige_år + 1)]).reshape(-1, 1)
+            fremtidige_pred = model.predict(fremtidige_år) if antall_fremtidige_år > 0 else np.array([])
+            
+            with prediksjon_output:
+                prediksjon_output.clear_output()
+                if antall_fremtidige_år > 0:
+                    print("Predikerte temperaturer:")
+                    for år, pred in zip(fremtidige_år.flatten(), fremtidige_pred):
+                        print(f"  År {år}: {pred:.2f} °C")
+
+            # Oppdater figuren
+            with fig.batch_update():
+                # Predikerte data
+                if antall_fremtidige_år > 0:
+                    fig.data[1].x = fremtidige_år.flatten()
+                    fig.data[1].y = fremtidige_pred.round(2)
+                    fig.data[1].text = [f'{value:.2f}°C' for value in fremtidige_pred]
+                else:
+                    fig.data[1].x = []
+                    fig.data[1].y = []
+                    fig.data[1].text = []
+                
+                # Regresjonslinje
+                alle_år = np.concatenate([X.flatten(), fremtidige_år.flatten()]) if antall_fremtidige_år > 0 else X.flatten()
+                alle_pred = np.concatenate([y_pred, fremtidige_pred]) if antall_fremtidige_år > 0 else y_pred
+                fig.data[2].x = alle_år
+                fig.data[2].y = alle_pred.round(2)
+                
+                # Oppdater x-akse
+                fig.update_xaxes(tickvals=alle_år)
+
+        # Opprett og vis slider
+        slider = widgets.IntSlider(
+            value=siste_år,
+            min=siste_år,
             max=siste_år+20,
             step=1,
             description='Velg år:',
             continuous_update=False
         )
-    )
+        
+
+        display(widgets.VBox([
+            slider,
+            fig,
+            prediksjon_output
+        ]))
+        widgets.interactive(oppdater_plot, slutt_år=slider)
+        
+        
