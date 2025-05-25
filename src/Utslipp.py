@@ -57,6 +57,7 @@ class plots:
         plt.ylabel("Utslipp (1000 tonn CO2-ekv.)")
         plt.xlabel("År")
         plt.tight_layout()
+        plt.grid()
         plt.show()
         return co2_per_year_mean
 
