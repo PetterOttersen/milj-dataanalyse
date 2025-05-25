@@ -1,38 +1,59 @@
+#Henter inn relevante bibloteker
+
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import seaborn as sns
 import os
 from sklearn import datasets
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import r2_score
+from sklearn.impute import SimpleImputer
 
 
+
+#Henter csv filen og leser den
 
 file_path = "raw_data/data/Utslippdata.csv"
-df = pd.read_csv(file_path) #Last inn data
+df = pd.read_csv(file_path) 
 
-
-
-def analyze_clean_utslipp_data(df):
-    df.columns = ['kilde', 'energiprodukt', 'komponent', 'år', 'statistikkvariabel', 'verdi'] #ai #Dataen inneholder både heltall og tekstrenger. Datasettet ligger i grupper 
-
-    df = df[['kilde', 'energiprodukt', 'komponent', 'år', 'verdi']] #ai
-    all_sources = df[df['kilde'].str.contains("0 Alle kilder", na=False)].index #retting av ai
-    df = df.drop(all_sources)
-    return df
 
 #Rydder datasettet, beholder relevante kolonner og fjerner rader for å gjøre videre datahåndtering lettere
 
+def analyze_clean_utslipp_data(df):
+     
+     #ai #Dataen inneholder både heltall og tekstrenger. Datasettet ligger i grupper
+    
+    df.columns = ['kilde', 'energiprodukt', 'komponent', 'år', 'statistikkvariabel', 'verdi'] 
+
+    df = df[['kilde', 'energiprodukt', 'komponent', 'år', 'verdi']] #ai
+
+    #Fjerner alle kilder for å gjøre statistikk beregninger lettere 
+    
+    all_sources = df[df['kilde'].str.contains("0 Alle kilder", na=False)].index 
+    df = df.drop(all_sources)
+    return df
+
+#Oppretter en klasse for statitiske plots
+
 class plots: 
 
-    def __init__(self, df): #ai
-        self.df = df #ai
+    #Funskjon som henter inn dataen inn i en dataframe, og lagrer den ai
+    def __init__(self, df): 
+        self.df = df 
+
 
     def plot_co2_per_year_mean(self):
+
+        #Grupperer radene i dataframe etter verdier i kolonnen år
+        #Mean() beregner gjennomsnitt for hver verdi inennfor gruppe hvert år gruppe
+        co2_per_year_mean = self.df.groupby('år')['verdi'].mean() 
         
-        co2_per_year_mean = self.df.groupby('år')['verdi'].mean() #gjennomsnittlige utslipp per år #ai
-        
+        #Plotter figuren
         plt.figure(figsize=(10, 6))
-        co2_per_year_mean.plot(kind='bar', title="CO2-utslipp over tid (gjennomsnitt)")
+        co2_per_year_mean.plot(kind='bar', title="Figur 1: CO2-utslipp over tid (gjennomsnitt)")
         plt.ylabel("Utslipp (1000 tonn CO2-ekv.)")
         plt.xlabel("År")
         plt.tight_layout()
@@ -41,9 +62,9 @@ class plots:
 
 
     def plot_co2_per_year_median(self):
-        
-        co2_per_year_median = self.df.groupby('år')['verdi'].median() #median av utslipp per år
-        
+
+        co2_per_year_median = self.df.groupby('år')['verdi'].median() 
+
         plt.figure(figsize=(10, 6))
         co2_per_year_median.plot(kind='bar', title="CO2-utslipp over tid (median)")
         plt.ylabel("Utslipp (1000 tonn CO2-ekv.)")
@@ -54,17 +75,22 @@ class plots:
 
     def plot_co2_per_source_median(self):
         
-        co2_per_source_median = self.df.groupby('kilde')['verdi'].mean() #medi
+
+        co2_per_source_median = self.df.groupby('kilde')['verdi'].mean() 
         
         plt.figure(figsize=(10, 6))
-        co2_per_source_median.plot(kind='bar', title="CO2-utslipp per kilde (median)")
+        co2_per_source_median.plot(kind='bar', title="CO2-utslipp per kilde gjennomsnitt")
         plt.ylabel("Utslipp (1000 tonn CO2-ekv.)")
         plt.xlabel("Kilde")
         plt.tight_layout()
         plt.show()
 
+
+
+
     def plot_co2_per_year_std(self):
         
+        #
         co2_per_year_std = self.df.groupby('år')['verdi'].std() 
         
         plt.figure(figsize=(10, 6))
@@ -74,9 +100,11 @@ class plots:
         plt.tight_layout()
         plt.show()
         return co2_per_year_std
-
+    
+    #Henter inn to nye parametre for å beregne forholdet mellom standarvavvik og gjennomsnitt
     def comparisons(self,co2_per_year_std, co2_per_year_mean):
         
+
         CV = co2_per_year_std / co2_per_year_mean
         
         plt.figure(figsize=(10, 3))
@@ -86,10 +114,22 @@ class plots:
         plt.xlabel("Kilde")
         plt.show()
 
+
+    #Varmekart visualisering
     def plot_co2_source_year_hm(self):
         
         sns.set_theme()
-        co2_source_year_hm = (self.df.pivot(index="kilde", columns="år", values="verdi"))
+
+
+        #Lager en kopi av datasettet 
+        df_log = self.df.copy()
+
+        #Transfomerer verdier i ['verdi] ved logaritme 
+        df_log["verdi_log"] = np.log10(df_log["verdi"].replace(0, np.nan))
+        
+        
+        co2_source_year_hm = (df_log.pivot(index="kilde", columns="år", values="verdi"))
+
         
         f, ax = plt.subplots(figsize=(9, 6))
         sns.heatmap(co2_source_year_hm, annot=True, fmt=".0f", linewidths=.5, ax=ax)
@@ -99,13 +139,7 @@ class plots:
         plt.show()
 
 
-
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import r2_score
-
-
+#Oppretter en ny klasse for regresjonsanalyse
 
 class plots_part_2: 
 
@@ -269,39 +303,50 @@ class missing_values:
 
 class research:
     
-    def two_source_comparison(self, source1,source2, time):
-        source_year_value = self.df.groupby('kilde')('år')['verdi'].mean()
+    def two_source_comparison(self, source1,source2, year):
+        #source_year_value = self.df.groupby(['kilde','år'])['verdi'].mean()
         filtered = self.df[(self.df['år'] == year) & (self.df['kilde'].isin([source1, source2]))] #ai
         
         result = filtered.groupby('kilde')['verdi'].mean()
 
         return result 
     
+    def sammenligne_brukervalg(self):
+        print("Tilgjengelige kilder:\n")
+        for kilde in sorted(self.df['kilde'].unique()):
+            print("-", kilde)
 
+        source1 = input('Velg første kilde')
+        source2 = input('Velg andre kilde')
 
+        print(self.df('kilde')).unique()
+        filtered = self.df[(self.df['år'] == year) & (self.df['kilde'].isin([source1, source2]))] #ai
 
-
-
+        if filtered.empty:
+            return("Ingen data funnet")
     
-    
+        result = filtered.groupby('kilde')['verdi'].mean()
 
 
-
-def plot_co2_per_year_mean(self):
-        
-        def __init__(self, df): 
-        self.df = df 
-
-        
-        co2_per_year_mean = self.df.groupby('år')['verdi'].mean() #gjennomsnittlige utslipp per år #ai
-        
-        plt.figure(figsize=(10, 6))
-        co2_per_year_mean.plot(kind='bar', title="CO2-utslipp over tid (gjennomsnitt)")
-        plt.ylabel("Utslipp (1000 tonn CO2-ekv.)")
-        plt.xlabel("År")
+        sns.set_style("whitegrid")
+        plt.figure(figsize=(8, 5))
+        sns.barplot(x=result.index, y=result.values)
+        plt.title(f"CO₂-utslipp i {year}: {source1} vs {source2}")
+        plt.ylabel("Gjennomsnittlig utslipp (1000 tonn CO₂-ekvivalenter)")
+        plt.xlabel("Kilde")
         plt.tight_layout()
         plt.show()
-        return co2_per_year_mean
+
+        return result
+
+
+
+
+
+
+    
+    
+
 
 
 
