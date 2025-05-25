@@ -212,17 +212,18 @@ class plots_part_2:
 from sklearn.impute import SimpleImputer
 
 
-class missins_values:
+class missing_values:
     def __init__(self, df): 
         self.df = df 
 
     
-    def remove_random_data(self.df,):#ai
-        if if not 0 < andel < 1:
-        raise ValueError("Andel må være mellom 0 og 1.")
+    def remove_random_data(self, andel = 0.1,seed = None):#ai
+        if  not 0 < andel < 1:
+            raise ValueError("Andel må være mellom 0 og 1.")
     
-        df_renset = df.drop(df.sample(frac=andel, random_state=seed).index)
-        return df_renset 
+        df_renset = self.df.drop(self.df.sample(frac=andel, random_state=seed).index)
+        self.df = df_renset
+        return self.df
     
     #ai
 
@@ -237,13 +238,33 @@ class missins_values:
 
         imputer = SimpleImputer(strategy='mean')
         df_imputed  = self.df.copy()
-        df_imputed[['verdi']] = imputer.fit_transform(df_imputed.df["verdi"])
+        df_imputed[['verdi']] = imputer.fit_transform(df_imputed[["verdi"]])
+ 
+        X = df_imputed[['år']]
+        y = df_imputed['verdi']
+       
 
-        X = df_imputed['verdi']
-        y = df_imputed[('år')]
-
-        model = LinearRegression
+        model = LinearRegression()
+        model.fit(X ,y)
         y_pred = model.predict(X)
+
+
+        plt.figure(figsize=(10, 6))
+        plt.scatter(complete_cases['år'], complete_cases['verdi'], label='Fullstendige rader', color='blue')
+        
+        if not incomplete_cases.empty:
+            imputert = model.predict(incomplete_cases[['år']])
+            plt.scatter(incomplete_cases['år'], imputert, label='Imputerte verdier', color='orange')
+
+        plt.plot(X, y_pred, label="Imputerte verdier",color="green")
+        plt.axvline(x=max(X["år"]), linestyle=":", color="gray")
+        plt.xlabel("År")
+        plt.ylabel("Verdi")
+        plt.title("Lineær regresjon med fremtidige prediksjoner")
+        plt.legend()
+        plt.grid(True)
+        plt.tight_layout()
+        plt.show()
 
 
 
