@@ -216,6 +216,8 @@ class missins_values:
     def __init__(self, df): 
         self.df = df 
 
+        
+
     def plot_missing_data(self):
         
         df_groupby = self.df.groupby('år')['verdi'].mean().reset_index() #ai
@@ -223,8 +225,27 @@ class missins_values:
         complete_cases = self.df.dropna()
         incomplete_cases = self.df[df.isnull().any(axis=1)]
 
+
+ 
+
         imputer = SimpleImputer(strategy='mean')
-        X_imputed = imputer.fit_transform(df[['X1', 'X2']])
+        df_imputed  = self.df.copy()
+        df_imputed[['verdi']] = imputer.fit_transform(df_imputed.df["verdi"])
+
+        X_complete = df_imputed['verdi']
+        y_complete = df_imputed[('år')]
+
+        model = LinearRegression
+        y_pred = model.predictt(X)
+
+
+        self.df_imputed pd.DataFrame(X_imputed, columns=['verdi'])
+
+        
+
+        X_final = self.df_imputed["verdi"]
+        
+        final_model =LinearRegression().fit(X_final, y_complete)
 
 
 
