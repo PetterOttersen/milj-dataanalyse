@@ -11,6 +11,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score
 from sklearn.impute import SimpleImputer
+from ipywidgets import interact, widgets
 
 
 
@@ -205,7 +206,7 @@ class plots_part_2:
         plt.grid(True)
         plt.show()
     
-    def futureplot(self, future_years = [2025,2026,2027,2028,2029,2030] ):
+    def futureplot(self):
         df_groupby = self.df.groupby('år')['verdi'].mean().reset_index() #ai
         
         X =  df_groupby[["år"]] #ai
@@ -226,22 +227,43 @@ class plots_part_2:
         model_full = LinearRegression()
         model_full.fit(X_scaled_full, y)
 
-        future_df = pd.DataFrame({"år": future_years})
-        future_scaled = scaler_full.transform(future_df)
-        future_preds = model_full.predict(future_scaled)#ai
+        siste_år_data = df_groupby["år"].max()  # Henter det siste året fra dataene
 
-        plt.figure(figsize=(10, 6))
-        plt.plot(X, model_full.predict(X_scaled_full), color="green", label="Historisk trend")
-        plt.plot(future_df, future_preds, color="red", linestyle="--", marker="x", label="Fremtidsprediksjon")
+        def oppdater_plot(slutt_år):
 
-        plt.axvline(x=max(X["år"]), linestyle=":", color="gray")
-        plt.xlabel("År")
-        plt.ylabel("Verdi")
-        plt.title("Lineær regresjon med fremtidige prediksjoner")
-        plt.legend()
-        plt.grid(True)
-        plt.tight_layout()
-        plt.show()
+            antall_fremtidige_år=slutt_år-siste_år_data if slutt_år-siste_år_data>0 else 0
+            future_years = np.arange(siste_år_data + 1, siste_år_data + antall_fremtidige_år+1)
+
+            future_df = pd.DataFrame({"år": future_years})
+            future_scaled = scaler_full.transform(future_df)
+            future_preds = model_full.predict(future_scaled)#ai
+
+            plt.figure(figsize=(10, 6))
+            plt.plot(X, model_full.predict(X_scaled_full), color="green", label="Historisk trend")
+            if antall_fremtidige_år>0:
+                plt.plot(future_df, future_preds, color="red", linestyle="--", marker="x", label="Fremtidsprediksjon")
+
+            plt.axvline(x=max(X["år"]), linestyle=":", color="gray")
+            plt.xlabel("År")
+            plt.ylabel("Verdi")
+            plt.title("Lineær regresjon med fremtidige prediksjoner")
+            plt.legend()
+            plt.grid(True)
+            plt.tight_layout()
+            plt.show()
+
+         # Interaktiv widget for antall fremtidige år
+        interact(
+        oppdater_plot, 
+        slutt_år=widgets.IntSlider(
+            value=siste_år_data+1,
+            min=siste_år_data+1,
+            max=siste_år_data+20,
+            step=1,
+            description='Velg år:',
+            continuous_update=False
+        )
+    )
 
 from sklearn.impute import SimpleImputer
 
@@ -310,7 +332,7 @@ class research:
         result = filtered.groupby('kilde')['verdi'].mean()
 
         return result 
-    
+    """
     def sammenligne_brukervalg(self):
         print("Tilgjengelige kilder:\n")
         for kilde in sorted(self.df['kilde'].unique()):
@@ -338,7 +360,7 @@ class research:
         plt.show()
 
         return result
-
+"""
 
 
 
