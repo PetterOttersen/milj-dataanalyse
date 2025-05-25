@@ -64,17 +64,19 @@ class plots:
 
     def plot_co2_per_year_median(self):
 
-        co2_per_year_median = self.df.groupby('år')['verdi'].median() 
+        co2_per_year_median = self.df.groupby('år')['verdi'].median().reset_index()
 
         plt.figure(figsize=(10, 6))
-        co2_per_year_median.plot(kind='bar', title="CO2-utslipp over tid (median)")
+        sns.lineplot(data=co2_per_year_median, x = 'år', y = 'verdi', marker = 'o', color = 'green')
+        plt.title('Co2 utslipp over tid i median')
         plt.ylabel("Utslipp (1000 tonn CO2-ekv.)")
         plt.xlabel("År")
+        plt.grid()
         plt.tight_layout()
         plt.show()
 
 
-    def plot_co2_per_source_median(self):
+    def plot_co2_per_source_mean(self):
         
 
         co2_per_source_median = self.df.groupby('kilde')['verdi'].mean() 
