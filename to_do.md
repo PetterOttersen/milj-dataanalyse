@@ -15,6 +15,7 @@ Readme for fremstilling
 Readme for src
 Kildeliste
 Barplot viser (alle kilder) 
+Funskjonsdokumentasjon
 
 
 
