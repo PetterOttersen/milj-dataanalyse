@@ -79,7 +79,7 @@ class statitics_plot:
         Self : Et objekt i klassen
 
         Returnerer:
-        Plot av gjennomsnittlgie utslipp per år 
+        Plot av gjennomsnittlige utslipp per år 
         """
 
         #Grupperer radene i dataframe etter verdier i kolonnen år
@@ -174,7 +174,7 @@ class statitics_plot:
     def plot_co2_source_year_hm(self):
         
         """
-        Lager en heatmap av CO2 per kilde per år
+        Lager et heatmap av CO2 per kilde per år
         
         Parametre: 
         Self : Et objekt i klassen
@@ -211,7 +211,7 @@ class plots_part_2:
 
     def linreg_train_test(self):
         """
-        Lineær regresjon ved bruk av to metodeer training 50%, og på 100 % 
+        Lineær regresjon ved bruk av to metoder training 50%, og på 100 % 
         
         Parametre: 
         Self : Et objekt i klassen

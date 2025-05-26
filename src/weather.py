@@ -22,8 +22,17 @@ class analyse_og_visualisere:
         self.FILE_PATH = file_path
 
     def analyser_vaerdata(self):
+
+        """Funksjonen henter inn datasettet via parameteren self og lagrer den som variabelen data
+        
+        Parametre: 
+        Self
+
+        Returnerer:
+        Analysen i en dictionary, Resultater
+        """
     
-    # Leser data fra Excel-filen
+    # Leser data fra csv-filen
         data = pd.read_csv(self.FILE_PATH)
     
     # Konverterer tiden til datetime og justerer med hensyn på timeOffset
@@ -95,6 +104,16 @@ class analyse_og_visualisere:
 
 
     def temperatur(self,resultater):
+
+        """Funksjonen tar inn resultatene fra analyser_vaerdata og plotter temperaturdataene
+        
+        Parametre:
+        resultater: Resultatene fra analyser_vaerdata
+        
+        Returnerer:
+        Gir ut to plot, et for temperatur over tid i et linjediagram og et for 
+        gjennomsnittstemperatur per år i et stolpediagram"""
+
         #Data fra analyze_weather_data
         temp_tider_sortert = resultater["sorterte_data"]["temperatur"]["tider"]
         temperatur_sortert = resultater["sorterte_data"]["temperatur"]["verdier"]
@@ -150,6 +169,15 @@ class analyse_og_visualisere:
 
 
     def nedbør(self,resultater):
+        """Funksjonen tar inn resultatene fra analyser_vaerdata og plotter nedbørsdataene
+        
+        Parametre:
+        resultater: Resultatene fra analyser_vaerdata
+        
+        Returnerer:
+        gir ut to plot, et for nedbør over tid i et linjediagram og et for
+        gjennomsnittsnedbør per år i et stolpediagram"""
+
         #Data fra analyze_weather_data
         nedbør_tider_sortert = resultater["sorterte_data"]["nedbør"]["tider"]
         nedbør_sortert = resultater["sorterte_data"]["nedbør"]["verdier"]
@@ -203,6 +231,14 @@ class analyse_og_visualisere:
         
 
     def sammenlign_temp_nedbør(self,resultater):
+        """Funksjonen tar inn resultatene fra analyser_vaerdata og plotter sammenhengen mellom temperatur og nedbør
+        
+        Parametre:
+        resultater: Resultatene fra analyser_vaerdata
+        
+        Returnerer:
+        Gir ut et scatterplot som viser sammenhengen mellom temperatur og nedbør"""
+
     # Data fra analyze_weather_data
         temp_data = resultater["temp_data"]
         nedbør_data = resultater["nedbør_data"]
@@ -233,6 +269,15 @@ class analyse_og_visualisere:
 
 
     def prediksjonsanalyse_nedbør_lineær(self, resultater):
+        """Funksjonen tar inn resultatene fra analyser_vaerdata og utfører en 
+        lineær regresjonsanalyse på nedbørsdataene. Deretter plottes historisk data og predektiv data i et scatterplot
+        som oppdateres ved bruk av en slider for å velge fremtidige år.
+        
+        Parametre:
+        resultater: Resultatene fra analyser_vaerdata
+        
+        Returnerer:
+        gir ut et scatterplot med historiske nedbørsdata, en regresjonslinje og mulighet for å predikere fremtidig nedbør"""
         nedbør_data = resultater["nedbør_data"]
         
         # Håndterer manglende verdier
@@ -303,6 +348,14 @@ class analyse_og_visualisere:
         prediksjon_output = widgets.Output()
 
         def oppdater_plot(slutt_år_nedbør):
+            """Funksjonen oppdaterer scatterplotet når slideren endres
+             
+            Parametre: 
+            slutt_år_nedbør: siste året vi har nedbørsdata
+             
+            Returnerer:
+            Det oppdaterte scatterplotet """
+
             antall_fremtidige_år = slutt_år_nedbør - siste_år if slutt_år_nedbør > siste_år else 0
             
             # Beregn prediksjoner
@@ -359,6 +412,15 @@ class analyse_og_visualisere:
         
     
     def prediksjonsanalyse_temperatur_lineær(self, resultater):
+        """Funksjonen tar inn resultatene fra analyser_vaerdata og utfører en 
+        lineær regresjonsanalyse på temperaturdataene. Deretter plottes historisk data og predektiv data i et stolpediagram
+        som oppdateres ved bruk av en slider for å velge fremtidige år.
+         
+        Parametre:
+        resultater: Resultatene fra analyser_vaerdata
+         
+        Returnerer
+        gir ut et stolpediagram med historiske temperaturdata, en regresjonslinje og mulighet for å predikere fremtidig temperatur """
         temp_data = resultater["temp_data"]
     
         if temp_data['value'].isna().any():
@@ -425,6 +487,14 @@ class analyse_og_visualisere:
         prediksjon_output = widgets.Output()
 
         def oppdater_plot(slutt_år_temp):
+            """Funksjonen oppdaterer stolpediagrammet når slideren endres
+             
+            Parametre: 
+            slutt_år_temp: siste året vi har temperaturdata
+             
+            Returnerer:
+            Det oppdaterte stolpediagrammet """
+
             antall_fremtidige_år = slutt_år_temp - siste_år if slutt_år_temp > siste_år else 0
             
             # Beregn prediksjoner
