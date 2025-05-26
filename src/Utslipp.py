@@ -151,7 +151,7 @@ class statitics_plot:
         Self : Et objekt i klassen
 
         Returnerer:
-        Plottet figur av gjennomsnittlige utslipp i hele perioden per kilde
+        Plottet figur av standardavvik utslipp i hele perioden per kilde
         """
         
         co2_per_year_std = self.df.groupby('kilde')['verdi'].std() 
@@ -201,54 +201,105 @@ class statitics_plot:
 
 class plots_part_2: 
 
-    def __init__(self, df): #ai
+    def __init__(self, df):     
         self.df = df #ai
     
+
     def linreg_train_test(self):
-    
-        #
+        """
+        Lineær regresjon ved bruk av to metodeer training 50%, og på 100 % 
+        
+        Parametre: 
+        Self : Et objekt i klassen
+
+        Returnerer:
+        scaler_full : 
+        model_full : 
+        X : 
+        X_scaled_full : 
+
+        ...
+        """
+        
+        #Aggregerer data og henter inn år og utslippsmengde i grupper
         df_groupby = self.df.groupby('år')['verdi'].mean().reset_index() #ai
         
-        X =  df_groupby[["år"]] #ai
-        y = df_groupby["verdi"] 
+        #Definerer funksjonene X og variabelen y 
         
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.50, random_state=42)
-        scaler = StandardScaler()
-        X_train_scaled = scaler.fit_transform(X_train)
-        X_test_scaled = scaler.transform(X_test)
-       
-        model_train = LinearRegression()
-        model_train.fit(X_train_scaled, y_train)
-       
-        y_train_pred = model_train.predict(X_test_scaled)
+        def regression_model():
+        
+            X =  df_groupby[["år"]] 
+            y = df_groupby["verdi"] 
 
 
-        model = LinearRegression()
-        model.fit(X, y)
+            #Deler regresjonen i train og test, hvor testdata er 50 % av dataen 
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.50, random_state=42)
 
-        y_pred = model.predict(X)
+            #Skalerer dataen og tranformerer treningsdataen og testdataen
+            scaler = StandardScaler()
+            X_train_scaled = scaler.fit_transform(X_train)
+            X_test_scaled = scaler.transform(X_test)
 
-        plt.plot(X, y_pred, color="green", label="Prediction")
+
+            #Trener modellen 
+            model_train = LinearRegression()
+            model_train.fit(X_train_scaled, y_train)
+            y_test_pred = model_train.predict(X_test_scaled)
+
+            #Skalerer slik den tester hele 100% av dataen 
+            scaler_full = StandardScaler() #ai
+            X_scaled_full = scaler_full.fit_transform(X)
+            
+            #Trener 100% av dataen
+            model_full = LinearRegression()
+            model_full.fit(X_scaled_full, y)
+            y_full_pred = model_full.predict(X_scaled_full)
+
+            #Returnerer for fremtidig implementasjon av disse av følgende variabler
+            return X, X_test, y_test, y_test_pred, y_full_pred, scaler_full, model_full, X_scaled_full
+      
+       #Kaller på variablene slik at linreg_train_test gjenkjenner de
+        X, X_test, y_test, y_test_pred, y_full_pred, scaler_full, model_full, X_scaled_full = regression_model()
+
+        
+        #Plotter
+        plt.plot(X_test, y_test_pred, color="green", label="Prediction")
         plt.scatter(X_test, y_test, label="Test data")
-        plt.plot(X_test, y_train_pred, color="red", label="Prediction")
+        plt.plot(X_test, y_full_pred, color="red", label="Prediction")
         plt.xlabel("År")
         plt.ylabel("Verdi")
         plt.title("Lineær regresjon")
         plt.legend()
         plt.grid(True)
         plt.show()
-
-        r2 = r2_score(y_test, y_train_pred)
+        
+        #Beregner R2-score 
+        r2 = r2_score(y_test, y_test_pred)
         print("r2 = ",r2)
-   
+        
+        #Returnerer nødvendige variabler
+        return scaler_full, model_full, X, X_scaled_full
 
+    
     def barplot(self):
+        """
+        Lineær regresjon 100 % av kilde og utslippsmengde i gjennomsnitt 
+        
+        Parametre: 
+        Self : Et objekt i klassen
+
+        Returnerer:
+        Blir en barplot 
+        ...
+        """
+        
         df_groupby = self.df.groupby('kilde')['verdi'].mean().reset_index()#mean
         
-        
+        #Bruker pd.get_dummies for å transfomere tekst til binære tall
         X =  pd.get_dummies(df_groupby[["kilde"]]) #ai
         y = df_groupby["verdi"] 
 
+        
         model = LinearRegression()
         model.fit(X, y)
 
@@ -264,41 +315,67 @@ class plots_part_2:
         plt.grid(True)
         plt.show()
     
-    def futureplot(self):
+
+    def futureplot(self,scaler_full, model_full, X, X_scaled_full):
+        """
+        
+        
+        Parametre: 
+        Self : 
+        scaler_full : 
+        model_full : 
+        X : 
+        X_scaled_full : 
+
+        Returnerer:
+        Blir en barplot 
+        ...
+        """
+
+
+        #Aggregerer data og henter inn år og utslippsmengde i grupper
+        #Bruker reset index slik sckit kan lese dataen 
         df_groupby = self.df.groupby('år')['verdi'].mean().reset_index() #ai
-        
-        X =  df_groupby[["år"]] #ai
-        y = df_groupby["verdi"] 
-        
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.50, random_state=42)
-        scaler = StandardScaler()
-        X_train_scaled = scaler.fit_transform(X_train)
-        X_test_scaled = scaler.transform(X_test)
-       
-        model_train = LinearRegression()
-        model_train.fit(X_train_scaled, y_train)
-        y_train_pred = model_train.predict(X_test_scaled)
+            
+        #Finner det siste / høyeste året i kolonnen år
+        siste_år_data = df_groupby["år"].max()  
 
-
-        scaler_full = StandardScaler() #ai
-        X_scaled_full = scaler_full.fit_transform(X)
-        model_full = LinearRegression()
-        model_full.fit(X_scaled_full, y)
-
-        siste_år_data = df_groupby["år"].max()  # Henter det siste året fra dataene
 
         def oppdater_plot(slutt_år):
+            """
+            Parametre: 
+            Self : 
+            scaler_full : 
+            model_full : 
+            X : 
+            X_scaled_full : 
 
-            antall_fremtidige_år=slutt_år-siste_år_data if slutt_år-siste_år_data>0 else 0
-            future_years = np.arange(siste_år_data + 1, siste_år_data + antall_fremtidige_år+1)
+            Returnerer:
+            Blir en barplot 
+            ...
+            """
 
-            future_df = pd.DataFrame({"år": future_years})
-            future_scaled = scaler_full.transform(future_df)
+            #Regner ut år i fremtiden som skal predikeres
+
+            antall_fremtidige_år=slutt_år-siste_år_data if slutt_år-siste_år_data>0 else 0 #ai
+
+            #Lager array med år i fremtiden 
+            future_years = np.arange(siste_år_data + 1, siste_år_data + antall_fremtidige_år+1)#ai
+
+            #Lager en dataframe til prediskjon
+            future_df = pd.DataFrame({"år": future_years})#ai
+
+            #Bruker skaler som ble brukt tidligere
+            future_scaled = scaler_full.transform(future_df)#ai
+
+            #Predikerer fremtidige år ved bruk av predefinert model
             future_preds = model_full.predict(future_scaled)#ai
 
             plt.figure(figsize=(10, 6))
-            plt.plot(X, model_full.predict(X_scaled_full), color="green", label="Historisk trend")
-            if antall_fremtidige_år>0:
+            plt.plot(X, model_full.predict(X_scaled_full), color="green", label="Historisk trend") 
+
+            #Bruker betingelse for å finne om det skal printes neste år eller ikke 
+            if antall_fremtidige_år>=0: #ai
                 plt.plot(future_df, future_preds, color="red", linestyle="--", marker="x", label="Fremtidsprediksjon")
 
             plt.axvline(x=max(X["år"]), linestyle=":", color="gray")
@@ -310,7 +387,7 @@ class plots_part_2:
             plt.tight_layout()
             plt.show()
 
-         # Interaktiv widget for antall fremtidige år
+         #Interaktiv widget for antall fremtidige år
         interact(
         oppdater_plot, 
         slutt_år=widgets.IntSlider(
@@ -339,20 +416,20 @@ class missing_values:
         self.df = df_renset
         return self.df
     
-    #ai
+    
 
 
 
     def plot_missing_data(self):
         
-        df_groupby = self.df.groupby('år')['verdi'].mean().reset_index() #ai
+        df_groupby = self.df.groupby('år')['verdi'].mean().reset_index() 
 
         complete_cases = self.df.dropna()
-        incomplete_cases = self.df[df.isnull().any(axis=1)]
+        incomplete_cases = self.df[df.isnull().any(axis=1)] #ai
 
-        imputer = SimpleImputer(strategy='mean')
+        imputer = SimpleImputer(strategy='mean') #ai
         df_imputed  = self.df.copy()
-        df_imputed[['verdi']] = imputer.fit_transform(df_imputed[["verdi"]])
+        df_imputed[['verdi']] = imputer.fit_transform(df_imputed[["verdi"]]) #ai
  
         X = df_imputed[['år']]
         y = df_imputed['verdi']
@@ -382,92 +459,4 @@ class missing_values:
 
 
 
-
-
-
-
-
-
-
-
-
-class research:
     
-    def two_source_comparison(self, source1,source2, year):
-        #source_year_value = self.df.groupby(['kilde','år'])['verdi'].mean()
-        filtered = self.df[(self.df['år'] == year) & (self.df['kilde'].isin([source1, source2]))] #ai
-        
-        result = filtered.groupby('kilde')['verdi'].mean()
-
-        return result 
-    
-
-
-
-    """
-    def sammenligne_brukervalg(self):
-        print("Tilgjengelige kilder:\n")
-        for kilde in sorted(self.df['kilde'].unique()):
-            print("-", kilde)
-
-        source1 = input('Velg første kilde')
-        source2 = input('Velg andre kilde')
-
-        print(self.df('kilde')).unique()
-        filtered = self.df[(self.df['år'] == year) & (self.df['kilde'].isin([source1, source2]))] #ai
-
-        if filtered.empty:
-            return("Ingen data funnet")
-    
-        result = filtered.groupby('kilde')['verdi'].mean()
-
-
-        sns.set_style("whitegrid")
-        plt.figure(figsize=(8, 5))
-        sns.barplot(x=result.index, y=result.values)
-        plt.title(f"CO₂-utslipp i {year}: {source1} vs {source2}")
-        plt.ylabel("Gjennomsnittlig utslipp (1000 tonn CO₂-ekvivalenter)")
-        plt.xlabel("Kilde")
-        plt.tight_layout()
-        plt.show()
-
-        return result
-"""
-
-
-"""
-   
-   
-    def linreg_test(self):
-        df_groupby = self.df.groupby('år')['verdi'].mean().reset_index() #ai
-        X =  df_groupby[["år"]] #ai
-        y = df_groupby["verdi"]
-        scaler = StandardScaler()
-        model = LinearRegression()
-        model.fit(X, y)
-
-        y_pred = model.predict(X)
-
-        plt.plot(X, y_pred, color="red", label="Prediction")
-        plt.xlabel("År")
-        plt.ylabel("Verdi")
-        plt.title("Lineær regresjon")
-        plt.legend()
-        plt.grid(True)
-        plt.show()
-
-"""
-
-    
-    
-
-
-
-
-
-
-
-
-
-
-
