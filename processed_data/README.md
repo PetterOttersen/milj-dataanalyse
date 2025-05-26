@@ -8,9 +8,7 @@ Notebooken inneholder interaktive widgets for dataanalyse. For full funksjonalit
 
 
 ## Fremstilling av utslippsdata 
-
-
-
+I denne delen analyserer vi historiske data for utslipp av CO2 i Norge. 
 
 
 ## Fremstilling av værdata

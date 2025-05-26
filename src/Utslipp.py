@@ -49,6 +49,10 @@ def analyze_clean_utslipp_data(df):
 
 #Oppretter en klasse for statitiske plots
 
+
+    
+
+
 class statitics_plot: 
 
     #Funskjon som henter inn dataen inn i en dataframe, og lagrer den ai
@@ -263,9 +267,9 @@ class plots_part_2:
 
         
         #Plotter
-        plt.plot(X_test, y_test_pred, color="green", label="Prediction")
-        plt.scatter(X_test, y_test, label="Test data")
-        plt.plot(X, y_full_pred, color="red", label="Prediction")
+        plt.plot(X_test, y_test_pred, color="green", label=" 50 % Prediction")
+        plt.scatter(X_test, y_test, label="Test verdier")
+        plt.plot(X, y_full_pred, color="red", label="100 % Prediksjon")
         plt.xlabel("År")
         plt.ylabel("Verdi")
         plt.title("Lineær regresjon")
@@ -282,16 +286,7 @@ class plots_part_2:
 
     
     def barplot(self):
-        """
-        Lineær regresjon 100 % av kilde og utslippsmengde i gjennomsnitt 
         
-        Parametre: 
-        Self : Et objekt i klassen
-
-        Returnerer:
-        Blir en barplot 
-        ...
-        """
         
         df_groupby = self.df.groupby('kilde')['verdi'].mean().reset_index()#mean
         
@@ -426,7 +421,7 @@ class missing_values:
         complete_cases = self.df.dropna()
 
         #Filtrere rader med minst en manglende verdi
-        incomplete_cases = self.df[df.isnull().any(axis=1)] #ai
+        incomplete_cases = self.df[self.df['verdi'].isnull()]
 
         #Legger til rader med tomme verdier
         imputer = SimpleImputer(strategy='mean') #ai
@@ -447,8 +442,9 @@ class missing_values:
         
         #Hvis det finnes imputerte verdier vises det som oransje punkter
         if not incomplete_cases.empty:
-            imputert = model.predict(incomplete_cases[['år']])
-            plt.scatter(incomplete_cases['år'], imputert, label='Imputerte verdier', color='orange')
+            
+            imputert = df_imputed.loc[incomplete_cases.index]
+            plt.scatter(incomplete_cases['år'], imputert['verdi'], label='Imputerte verdier', color='orange', marker = 'x')
 
         plt.plot(X, y_pred, label="Imputerte verdier",color="green")
         plt.xlabel("År")
