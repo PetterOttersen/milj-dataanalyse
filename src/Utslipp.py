@@ -265,7 +265,7 @@ class plots_part_2:
         #Plotter
         plt.plot(X_test, y_test_pred, color="green", label="Prediction")
         plt.scatter(X_test, y_test, label="Test data")
-        plt.plot(X_test, y_full_pred, color="red", label="Prediction")
+        plt.plot(X, y_full_pred, color="red", label="Prediction")
         plt.xlabel("År")
         plt.ylabel("Verdi")
         plt.title("Lineær regresjon")
@@ -407,8 +407,8 @@ class missing_values:
     def __init__(self, df): 
         self.df = df 
 
-    
-    def remove_random_data(self, andel = 0.1,seed = None):#ai
+    #Fjerner tilfeldig data
+    def remove_random_data(self, andel = 0.5,seed = None):#ai
         if  not 0 < andel < 1:
             raise ValueError("Andel må være mellom 0 og 1.")
     
@@ -419,14 +419,16 @@ class missing_values:
     
 
 
-
+    
     def plot_missing_data(self):
         
-        df_groupby = self.df.groupby('år')['verdi'].mean().reset_index() 
-
+        #Lagrer alle fullstendig rader
         complete_cases = self.df.dropna()
+
+        #Filtrere rader med minst en manglende verdi
         incomplete_cases = self.df[df.isnull().any(axis=1)] #ai
 
+        #Legger til rader med tomme verdier
         imputer = SimpleImputer(strategy='mean') #ai
         df_imputed  = self.df.copy()
         df_imputed[['verdi']] = imputer.fit_transform(df_imputed[["verdi"]]) #ai
@@ -439,16 +441,16 @@ class missing_values:
         model.fit(X ,y)
         y_pred = model.predict(X)
 
-
+        #Plotter
         plt.figure(figsize=(10, 6))
         plt.scatter(complete_cases['år'], complete_cases['verdi'], label='Fullstendige rader', color='blue')
         
+        #Hvis det finnes imputerte verdier vises det som oransje punkter
         if not incomplete_cases.empty:
             imputert = model.predict(incomplete_cases[['år']])
             plt.scatter(incomplete_cases['år'], imputert, label='Imputerte verdier', color='orange')
 
         plt.plot(X, y_pred, label="Imputerte verdier",color="green")
-        plt.axvline(x=max(X["år"]), linestyle=":", color="gray")
         plt.xlabel("År")
         plt.ylabel("Verdi")
         plt.title("Lineær regresjon med fremtidige prediksjoner")
