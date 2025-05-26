@@ -114,7 +114,7 @@ class analyse_og_visualisere:
         Gir ut to plot, et for temperatur over tid i et linjediagram og et for 
         gjennomsnittstemperatur per år i et stolpediagram"""
 
-        #Data fra analyze_weather_data
+        #Data fra analyser_vaerdata
         temp_tider_sortert = resultater["sorterte_data"]["temperatur"]["tider"]
         temperatur_sortert = resultater["sorterte_data"]["temperatur"]["verdier"]
         gjennomsnitts_temp = resultater["temperatur_statistikk"]["gjennomsnitt"]
@@ -138,7 +138,7 @@ class analyse_og_visualisere:
 
         fig = go.FigureWidget()
         
-        # Legg til alle spor på forhånd
+        # Legg til all data
         fig.add_trace(go.Bar(
             x=temp_årlig_uten_2012.index,
             y=temp_årlig_uten_2012.values.round(2),
@@ -148,7 +148,7 @@ class analyse_og_visualisere:
             textposition='outside'
         ))
 
-        # Layout
+        # fikser på utseendet til stolpediagrammet
         fig.update_layout(
             title='Årlig gjennomsnittlig temperatur',
             xaxis_title='År',
@@ -178,7 +178,7 @@ class analyse_og_visualisere:
         gir ut to plot, et for nedbør over tid i et linjediagram og et for
         gjennomsnittsnedbør per år i et stolpediagram"""
 
-        #Data fra analyze_weather_data
+        #Data fra analyser_vaerdata
         nedbør_tider_sortert = resultater["sorterte_data"]["nedbør"]["tider"]
         nedbør_sortert = resultater["sorterte_data"]["nedbør"]["verdier"]
         gjennomsnitts_nedbør = resultater["nedbør_statistikk"]["gjennomsnitt"]
@@ -200,7 +200,7 @@ class analyse_og_visualisere:
         nedbør_årlig_uten_2012=nedbør_årlig[1:]
         fig = go.FigureWidget()
         
-        # Legg til alle spor på forhånd
+        # Legg til all data
         fig.add_trace(go.Bar(
             x=nedbør_årlig_uten_2012.index,
             y=nedbør_årlig_uten_2012.values.round(2),
@@ -210,7 +210,7 @@ class analyse_og_visualisere:
             textposition='outside'
         ))
 
-        # Layout
+        # Fikser på utseendet til stolpediagrammet
         fig.update_layout(
             title='Årlig gjennomsnittlig nedbør',
             xaxis_title='År',
@@ -239,7 +239,7 @@ class analyse_og_visualisere:
         Returnerer:
         Gir ut et scatterplot som viser sammenhengen mellom temperatur og nedbør"""
 
-    # Data fra analyze_weather_data
+    # Data fra analyser_vaerdata
         temp_data = resultater["temp_data"]
         nedbør_data = resultater["nedbør_data"]
 
@@ -278,6 +278,8 @@ class analyse_og_visualisere:
         
         Returnerer:
         gir ut et scatterplot med historiske nedbørsdata, en regresjonslinje og mulighet for å predikere fremtidig nedbør"""
+
+        # Data fra analyser_vaerdata
         nedbør_data = resultater["nedbør_data"]
         
         # Håndterer manglende verdier
@@ -300,10 +302,10 @@ class analyse_og_visualisere:
         y_pred = model.predict(X)
         siste_år = int(X[-1][0])
 
-        # Opprett FigureWidget
+        # Opprett figur
         fig = go.FigureWidget()
         
-        # Legg til scatterplot for historiske data
+        # Legg til scatterplot for historiske data i figuren
         fig.add_trace(go.Scatter(
             x=X.flatten(),
             y=y.round(2),
@@ -314,7 +316,7 @@ class analyse_og_visualisere:
             hoverinfo='text'
         ))
         
-        # Tomt spor for fremtidige prediksjoner
+        # Legger til et tomt spor for fremtidige prediksjoner
         fig.add_trace(go.Scatter(
             x=[],
             y=[],
@@ -334,7 +336,7 @@ class analyse_og_visualisere:
             line=dict(color='red', width=3)
         ))
         
-        # Layout
+        # fikser på utseendet til scatterplotet
         fig.update_layout(
             title='Årlig gjennomsnittlig nedbør med lineær regresjon',
             xaxis_title='År',
@@ -345,6 +347,7 @@ class analyse_og_visualisere:
             height=600
         )
         
+        #Gjør det enkelt å printe ut prediksjoner for riktig antall år
         prediksjon_output = widgets.Output()
 
         def oppdater_plot(slutt_år_nedbør):
@@ -362,6 +365,7 @@ class analyse_og_visualisere:
             fremtidige_år = np.array([siste_år + i for i in range(1, antall_fremtidige_år + 1)]).reshape(-1, 1)
             fremtidige_pred = model.predict(fremtidige_år) if antall_fremtidige_år > 0 else np.array([])
             
+            #gir riktig prediksjoner når det printes
             with prediksjon_output:
                 prediksjon_output.clear_output()
                 if antall_fremtidige_år > 0:
@@ -390,7 +394,7 @@ class analyse_og_visualisere:
                 # Oppdater x-akse
                 fig.update_xaxes(tickvals=alle_år)
 
-        # Opprett og vis slider
+        # Oppretter slider
         slider = widgets.IntSlider(
             value=siste_år,
             min=siste_år,
@@ -400,11 +404,13 @@ class analyse_og_visualisere:
             continuous_update=False
         )
         
+        # Viser slideren, figuren og output
         display(widgets.VBox([
             slider,
             fig,
             prediksjon_output
         ]))
+        # Knytter slideren til oppdateringsfunksjonen
         widgets.interactive(oppdater_plot, slutt_år_nedbør=slider)
         
    
@@ -421,6 +427,8 @@ class analyse_og_visualisere:
          
         Returnerer
         gir ut et stolpediagram med historiske temperaturdata, en regresjonslinje og mulighet for å predikere fremtidig temperatur """
+
+        #henter data fra analyser_vaerdata
         temp_data = resultater["temp_data"]
     
         if temp_data['value'].isna().any():
@@ -441,10 +449,10 @@ class analyse_og_visualisere:
         y_pred = model.predict(X)
         siste_år = int(X[-1][0])
 
-        # Opprett FigureWidget
+        # Oppretter figur
         fig = go.FigureWidget()
         
-        # Legg til alle spor på forhånd
+        # Legger til historiske data i figuren
         fig.add_trace(go.Bar(
             x=X.flatten(),
             y=y.round(2),
@@ -454,7 +462,7 @@ class analyse_og_visualisere:
             textposition='outside'
         ))
         
-        # Tomme spor for prediksjoner og regresjonslinje
+        # Legger til et tomt spor for fremtidige prediksjoner
         fig.add_trace(go.Bar(
             x=[],
             y=[],
@@ -463,7 +471,7 @@ class analyse_og_visualisere:
             text=[],
             textposition='outside'
         ))
-        
+        # Regresjonslinje
         fig.add_trace(go.Scatter(
             x=[],
             y=[],
@@ -472,7 +480,7 @@ class analyse_og_visualisere:
             line=dict(color='red', width=3)
         ))
         
-        # Layout
+        # fikser på utseendet til figuren
         fig.update_layout(
             title='Årlig gjennomsnittlig temperatur med lineær regresjon',
             xaxis_title='År',
@@ -484,6 +492,7 @@ class analyse_og_visualisere:
             height=600
         )
         
+        # Gjør det enkelt å printe ut prediksjoner for riktig antall år
         prediksjon_output = widgets.Output()
 
         def oppdater_plot(slutt_år_temp):
@@ -501,6 +510,7 @@ class analyse_og_visualisere:
             fremtidige_år = np.array([siste_år + i for i in range(1, antall_fremtidige_år + 1)]).reshape(-1, 1)
             fremtidige_pred = model.predict(fremtidige_år) if antall_fremtidige_år > 0 else np.array([])
             
+            # Gjør det enkelt å printe ut data til riktig år
             with prediksjon_output:
                 prediksjon_output.clear_output()
                 if antall_fremtidige_år > 0:
@@ -529,7 +539,7 @@ class analyse_og_visualisere:
                 # Oppdater x-akse
                 fig.update_xaxes(tickvals=alle_år)
 
-        # Opprett og vis slider
+        # Oppretter slider
         slider = widgets.IntSlider(
             value=siste_år,
             min=siste_år,
@@ -539,12 +549,13 @@ class analyse_og_visualisere:
             continuous_update=False
         )
         
-
+        # Viser slideren, figuren og output
         display(widgets.VBox([
             slider,
             fig,
             prediksjon_output
         ]))
+        # Knytter slideren til oppdateringsfunksjonen
         widgets.interactive(oppdater_plot, slutt_år_temp=slider)
         
         
