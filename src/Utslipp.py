@@ -39,7 +39,7 @@ def analyze_clean_utslipp_data(df):
     
     df.columns = ['kilde', 'energiprodukt', 'komponent', 'år', 'statistikkvariabel', 'verdi'] 
 
-    df = df[['kilde', 'energiprodukt', 'komponent', 'år', 'verdi']] #ai
+    df = df[['kilde', 'energiprodukt', 'komponent', 'år', 'verdi']] 
 
     #Fjerner alle kilder for å gjøre statistikk beregninger lettere 
     
@@ -55,7 +55,7 @@ def analyze_clean_utslipp_data(df):
 
 class statitics_plot: 
 
-    #Funskjon som henter inn dataen inn i en dataframe, og lagrer den ai
+    #Funskjon som henter inn dataen inn i en dataframe, og lagrer den 
     def __init__(self, df): 
         """
         Funskjon som henter inn dataen inn i en dataframe, og lagrer den som self.df inn i klassen
@@ -170,7 +170,7 @@ class statitics_plot:
     
    
 
-    #Varmekart visualisering
+        #Varmekart visualisering
     def plot_co2_source_year_hm(self):
         
         """
@@ -211,16 +211,16 @@ class plots_part_2:
 
     def linreg_train_test(self):
         """
-        Lineær regresjon ved bruk av to metoder training 50%, og på 100 % 
+        Lineær regresjon ved bruk av to metoder training 50%, og training på 100 % av datasettet
         
         Parametre: 
         Self : Et objekt i klassen
 
         Returnerer:
-        scaler_full : 
-        model_full : 
-        X : 
-        X_scaled_full : 
+        scaler_full : Standardrisesere hele datasettet 
+        model_full : Regresjonsmodell som brukes til å lage prediksjoner 
+        X :  år kolonnen
+        X_scaled_full : Skalert type av X brukt for hele datasettet
 
         ...
         """
@@ -231,6 +231,27 @@ class plots_part_2:
         #Definerer funksjonene X og variabelen y 
         
         def regression_model():
+            """
+            Lineær regresjon % 
+            
+            Parametre: 
+            Self : Et objekt i klassen
+
+            Returnerer: 
+            
+            X:
+            X_test :
+            y_test : 
+            y_test_pred : 
+            y_full_pred :  
+            scaler_full :
+            model_full : 
+            X_scaled_full : 
+             
+
+            ...
+            """
+
         
             X =  df_groupby[["år"]] 
             y = df_groupby["verdi"] 
@@ -398,63 +419,71 @@ class plots_part_2:
 from sklearn.impute import SimpleImputer
 
 
-class missing_values:
-    def __init__(self, df): 
-        self.df = df 
+df_with_nans = df.copy()
+np.random.seed(42)
+missing_idx = np.random.choice(df_with_nans.index, size=int(0.3 * len(df_with_nans)), replace=False)
+df_with_nans.loc[missing_idx, "verdi"] = np.nan
 
-    #Fjerner tilfeldig data
-    def remove_random_data(self, andel = 0.5,seed = None):#ai
-        if  not 0 < andel < 1:
-            raise ValueError("Andel må være mellom 0 og 1.")
-    
-        df_renset = self.df.drop(self.df.sample(frac=andel, random_state=seed).index)
-        self.df = df_renset
-        return self.df
-    
-    
-
-
-    
-    def plot_missing_data(self):
-        
-        #Lagrer alle fullstendig rader
-        complete_cases = self.df.dropna()
-
-        #Filtrere rader med minst en manglende verdi
-        incomplete_cases = self.df[self.df['verdi'].isnull()]
-
-        #Legger til rader med tomme verdier
-        imputer = SimpleImputer(strategy='mean') #ai
-        df_imputed  = self.df.copy()
-        df_imputed[['verdi']] = imputer.fit_transform(df_imputed[["verdi"]]) #ai
- 
-        X = df_imputed[['år']]
-        y = df_imputed['verdi']
+class MissingValues:
+    def __init__(self, df, legg_til_nans=False, andel_nans=0.3, seed=42): 
        
+        self.df = df.copy()
+        if legg_til_nans:
+            np.random.seed(seed)
+            missing_idx = np.random.choice(
+                self.df.index, size=int(andel_nans * len(self.df)), replace=False
+            )
+            self.df.loc[missing_idx, "verdi"] = np.nan
 
+    def remove_random_data(self, andel=0.5, seed=None):
+        
+        if not 0 < andel < 1:
+            raise ValueError("Andel må være mellom 0 og 1.")
+        self.df = self.df.drop(self.df.sample(frac=andel, random_state=seed).index)
+        return self.df
+
+    def plot_missing_data(self, verdi_kolonne='verdi', år_kolonne='år'):
+        
+        if verdi_kolonne not in self.df.columns or år_kolonne not in self.df.columns:
+            raise KeyError(f"DataFrame må inneholde kolonnene '{verdi_kolonne}' og '{år_kolonne}'.")
+
+        # Del opp datasettet
+        complete_cases = self.df.dropna(subset=[verdi_kolonne])
+        incomplete_cases = self.df[self.df[verdi_kolonne].isnull()]
+
+        # Imputer manglende verdier med gjennomsnitt
+        imputer = SimpleImputer(strategy='mean')
+        df_imputed = self.df.copy()
+        df_imputed[[verdi_kolonne]] = imputer.fit_transform(df_imputed[[verdi_kolonne]])
+
+        # Lineær regresjon
+        X = df_imputed[[år_kolonne]]
+        y = df_imputed[verdi_kolonne]
         model = LinearRegression()
-        model.fit(X ,y)
+        model.fit(X, y)
         y_pred = model.predict(X)
 
-        #Plotter
         plt.figure(figsize=(10, 6))
-        plt.scatter(complete_cases['år'], complete_cases['verdi'], label='Fullstendige rader', color='blue')
+        plt.scatter(complete_cases[år_kolonne], complete_cases[verdi_kolonne],
+                    label='Fullstendige rader', color='blue')
         
-        #Hvis det finnes imputerte verdier vises det som oransje punkter
         if not incomplete_cases.empty:
-            
             imputert = df_imputed.loc[incomplete_cases.index]
-            plt.scatter(incomplete_cases['år'], imputert['verdi'], label='Imputerte verdier', color='orange', marker = 'x')
+            plt.scatter(
+                incomplete_cases[år_kolonne],
+                imputert[verdi_kolonne],
+                label='Imputerte verdier',
+                color='orange',
+                marker='x',
+                s=100
+            )
 
-        plt.plot(X, y_pred, label="Imputerte verdier",color="green")
+        plt.plot(X, y_pred, label='Lineær regresjon', color='green')
         plt.xlabel("År")
         plt.ylabel("Verdi")
-        plt.title("Lineær regresjon med fremtidige prediksjoner")
+        plt.title("Lineær regresjon og imputering av manglende data")
         plt.legend()
         plt.grid(True)
         plt.tight_layout()
         plt.show()
 
-
-
-    

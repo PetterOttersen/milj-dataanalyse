@@ -11,6 +11,8 @@ Notebooken inneholder interaktive widgets for dataanalyse. For full funksjonalit
 I denne delen analyserer vi data fra 2013 til 2024 for utslipp av CO2 i Norge, og prøver å gi et innblikk i hvordan det kan bli i fremtiden. 
 
 
+
+
 ## Fremstilling av værdata
 I denne delen analyserer vi data fra 2013 til 2024 av nedbør og temperatur i Norge, og prøver å prediktere hvordan det kan bli i fremtiden.
 

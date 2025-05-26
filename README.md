@@ -15,3 +15,4 @@ Kjør først getData.py og dataCleaning.py
 yr - https://frost.met.no/observations/v0.jsonld
 
 ssb - https://data.ssb.no/api/v0/dataset/832678.csv?lang=no
+
