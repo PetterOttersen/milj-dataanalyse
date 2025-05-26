@@ -387,7 +387,7 @@ class plots_part_2:
             plt.tight_layout()
             plt.show()
 
-         #Interaktiv widget for antall fremtidige år
+        #Interaktiv widget for antall fremtidige år
         interact(
         oppdater_plot, 
         slutt_år=widgets.IntSlider(
