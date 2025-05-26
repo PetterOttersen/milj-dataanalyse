@@ -8,11 +8,19 @@ Installer requierements.txt
 
 
 ## Bruksinstruks
-Kjør først getData.py og dataCleaning.py
+For best mulig gjennomkjøring bruk VS code eller jupiter notebook, da interaktive visualiseringer ikke vil vises i github.
+
+1. Kjør først [getData.py](raw_data/getData.py) og [dataCleaning.py](raw_data/dataCleaning.py)
+2. Deretter kan src filene kjøres [Utslipp.py](src/Utslipp.py) og [weather.py](src/weather.py)
+3. For å få opp visualiseringene må [Fremstilling_Utslipp.ipynb](processed_data/Fremstilling_Utslipp.ipynb) og
+   [Fremstilling_weather.ipynb](processed_data/Fremstilling_weather.ipynb) kjøres
 
 ## Kilder
 
 yr - https://frost.met.no/observations/v0.jsonld
 
 ssb - https://data.ssb.no/api/v0/dataset/832678.csv?lang=no
+<<<<<<< HEAD
 
+=======
+>>>>>>> c8997a3e15519de021ade09df109eaf2dfa1c27b
