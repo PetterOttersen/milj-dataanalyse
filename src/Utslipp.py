@@ -238,18 +238,15 @@ class plots_part_2:
             Self : Et objekt i klassen
 
             Returnerer: 
-            
-            X:
-            X_test :
-            y_test : 
-            y_test_pred : 
-            y_full_pred :  
-            scaler_full :
-            model_full : 
-            X_scaled_full : 
-             
+            X: år kolonnen
+            X_test : Tester 50 % av dataen 
+            y_test : Ekte målingen fra datasettet
+            y_test_pred : Predikerte verdier 50 % at datasettet, viser hvordan modellen forutsier data.
+            y_full_pred : Predikerte verdier for 100 % av datasettet
+            scaler_full : Standardrisesere hele datasettet 
+            model_full : Regresjonsmodell som brukes til å lage prediksjoner 
+            X_scaled_full : Skalert type av X brukt for hele datasettet
 
-            ...
             """
 
         
@@ -307,6 +304,16 @@ class plots_part_2:
 
     
     def barplot(self):
+        """
+        Lineær regresjon trent på 100 % på datasettet. 
+            
+        Parametre: 
+        Self : Et objekt i klassen
+
+        Returnerer: 
+        Regresjon av kilde og verdi fremstilt som barplot 
+
+        """
         
         
         df_groupby = self.df.groupby('kilde')['verdi'].mean().reset_index()#mean
@@ -334,18 +341,18 @@ class plots_part_2:
 
     def futureplot(self,scaler_full, model_full, X, X_scaled_full):
         """
-        
+        Bruker regresjon til å fremstille fremtiden 
         
         Parametre: 
-        Self : 
-        scaler_full : 
-        model_full : 
-        X : 
-        X_scaled_full : 
+        Self : Et objekt i klassen
+        scaler_full : Standardrisesere hele datasettet
+        model_full : Regresjonsmodell som brukes til å lage prediksjoner
+        X : år kolonnen
+        X_scaled_full :  Skalert type av X brukt for hele datasettet
 
         Returnerer:
         Blir en barplot 
-        ...
+
         """
 
 
@@ -359,16 +366,14 @@ class plots_part_2:
 
         def oppdater_plot(slutt_år):
             """
+
+            Lager en fremstilling av hitorisk data samt fremtidige prediksjoner 
             Parametre: 
-            Self : 
-            scaler_full : 
-            model_full : 
-            X : 
-            X_scaled_full : 
+            Self : Et objekt i klassen
+            
 
             Returnerer:
-            Blir en barplot 
-            ...
+            Viser en graf med historisk data samt fremtidige prediksjoner 
             """
 
             #Regner ut år i fremtiden som skal predikeres
