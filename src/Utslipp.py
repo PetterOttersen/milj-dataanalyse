@@ -15,6 +15,7 @@ from ipywidgets import interact, widgets
 
 
 
+
 #Henter csv filen og leser den
 
 file_path = "raw_data/data/Utslippdata.csv"
@@ -421,17 +422,31 @@ class plots_part_2:
         )
     )
 
-from sklearn.impute import SimpleImputer
 
-
+#Lager en kopi av datasetett
 df_with_nans = df.copy()
+#Bruker random 
 np.random.seed(42)
+
+#Erstatter verdier med nan
 missing_idx = np.random.choice(df_with_nans.index, size=int(0.3 * len(df_with_nans)), replace=False)
 df_with_nans.loc[missing_idx, "verdi"] = np.nan
 
 class MissingValues:
     def __init__(self, df, legg_til_nans=False, andel_nans=0.3, seed=42): 
-       
+        """
+        Bearbeider datasettet med nanverdier
+        
+        Parametre: 
+        self : Et objekt i klassen
+        df : datafilen
+        legg_til _nans=False : legger til Nan verdier i datasettet 
+        andel_nans=0.3 : Prosentandel av dataen som skal ersattes med nan verdier
+        seed=42 : Startverdi for tilfeldig tallgenerator
+
+        Returnerer:
+        Dataframe med muligens nanverdier
+        """
         self.df = df.copy()
         if legg_til_nans:
             np.random.seed(seed)
@@ -441,6 +456,17 @@ class MissingValues:
             self.df.loc[missing_idx, "verdi"] = np.nan
 
     def remove_random_data(self, andel=0.5, seed=None):
+        """
+        Bearbeider datasettet med nanverdier
+        
+        Parametre: 
+        self : Et objekt i klassen
+        andel = 0.5 : 50 % av datasettet med nan verdier
+        seed = none : Startverdi for tilfeldig tallgenerator
+        
+        Returnerer:
+        Bearbeidet datasett med nanverdier
+        """
         
         if not 0 < andel < 1:
             raise ValueError("Andel må være mellom 0 og 1.")
