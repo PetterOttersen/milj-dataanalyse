@@ -72,7 +72,7 @@ class statitics_plot:
         self.df = df 
 
 
-    def plot_co2_per_year_mean(self):
+    def plot_co2_per_year_mean(self, vis_data=False, vis_plot=True):
         """
         Finner gjennomsnittlig utslipp per år og plotter det 
         
@@ -83,21 +83,28 @@ class statitics_plot:
         Plot av gjennomsnittlige utslipp per år 
         """
 
-        #Grupperer radene i dataframe etter verdier i kolonnen år
-        #Mean() beregner gjennomsnitt for hver verdi inennfor gruppe hvert år gruppe
         co2_per_year_mean = self.df.groupby('år')['verdi'].mean() 
 
-        
-        #Plotter figuren
-        plt.figure(figsize=(10, 6))
-        co2_per_year_mean.plot(kind='bar', title="Figur 1: CO2-utslipp over tid (gjennomsnitt)")
-        plt.ylabel("Utslipp (1000 tonn CO2-ekv.)")
-        plt.xlabel("År")
-        plt.tight_layout()
-        plt.grid()
-        plt.show()
+        if vis_data:
+            print(co2_per_year_mean)
+
+
+        #Grupperer radene i dataframe etter verdier i kolonnen år
+        #Mean() beregner gjennomsnitt for hver verdi inennfor gruppe hvert år gruppe
+
+        if vis_plot:
+            
+            #Plotter figuren
+            plt.figure(figsize=(10, 6))
+            co2_per_year_mean.plot(kind='bar', title="Figur 1: CO2-utslipp over tid (gjennomsnitt)")
+            plt.ylabel("Utslipp (1000 tonn CO2-ekv.)")
+            plt.xlabel("År")
+            plt.tight_layout()
+            plt.grid()
+            plt.show()
 
         return co2_per_year_mean
+    
         
 
 
@@ -167,6 +174,8 @@ class statitics_plot:
         plt.xlabel("Kilde")
         plt.tight_layout()
         plt.show()
+        return co2_per_year_std
+    
         
     
    
@@ -298,7 +307,7 @@ class plots_part_2:
         
         #Beregner R2-score 
         r2 = r2_score(y_test, y_test_pred)
-        print("r2 = ",r2)
+        print("r2 (50% testdata) = ",r2)
         
         #Returnerer nødvendige variabler
         return scaler_full, model_full, X, X_scaled_full
