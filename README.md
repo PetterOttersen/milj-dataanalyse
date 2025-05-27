@@ -17,7 +17,13 @@ For best mulig gjennomkjøring bruk VS code eller jupiter notebook, da interakti
 
 ## Kilder
 
+### Innhenting av data:
 yr - https://frost.met.no/observations/v0.jsonld
-
 ssb - https://data.ssb.no/api/v0/dataset/832678.csv?lang=no
 
+### Andre nettsider
+Datacamp - https://www.datacamp.com/tutorial/sklearn-linear-regression?dc_referrer=https%3A%2F%2Fwww.google.com%2F 
+
+Medium - https://medium.com/tech-encyclopedia/how-can-we-use-python-to-predict-future-events-f987bd23dad6 
+
+Seaborn - https://seaborn.pydata.org/generated/seaborn.heatmap.html 
