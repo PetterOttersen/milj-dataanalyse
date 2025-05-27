@@ -442,6 +442,7 @@ missing_idx = np.random.choice(df_with_nans.index, size=int(0.3 * len(df_with_na
 df_with_nans.loc[missing_idx, "verdi"] = np.nan
 
 class MissingValues:
+    #NB store deler av denne funksjonen er ai generert
     def __init__(self, df, legg_til_nans=False, andel_nans=0.3, seed=42): 
         """
         Bearbeider datasettet med nanverdier
@@ -464,7 +465,7 @@ class MissingValues:
                 self.df.index, size=int(andel_nans * len(self.df)), replace=False
             )
             self.df.loc[missing_idx, "verdi"] = np.nan
-
+    #NB store deler av denne funksjonen er ai generert
     def remove_random_data(self, andel=0.5, seed=None):
         """
         Bearbeider datasettet med nanverdier
@@ -483,7 +484,8 @@ class MissingValues:
         #Velger en viss andel data og fjerner denne dataen til nanverdier
         self.df = self.df.drop(self.df.sample(frac=andel, random_state=seed).index)
         return self.df
-
+    
+    #NB noe deler av denne funksjonen er ai generert
     def plot_missing_data(self, verdi_kolonne='verdi', år_kolonne='år'):
         """
         Bearbeider datasettet med nanverdier
