@@ -72,7 +72,7 @@ class statitics_plot:
         self.df = df 
 
 
-    def plot_co2_per_year_mean(self, vis_data=False, vis_plot=True):
+    def plot_co2_per_year_mean(self):
         """
         Finner gjennomsnittlig utslipp per år og plotter det 
         
@@ -80,28 +80,23 @@ class statitics_plot:
         Self : Et objekt i klassen
 
         Returnerer:
+        co2_per_year_mean: En dataframe med år og utslipp i gjennomsnitt
         Plot av gjennomsnittlige utslipp per år 
+
         """
-
-        co2_per_year_mean = self.df.groupby('år')['verdi'].mean() 
-
-        if vis_data:
-            print(co2_per_year_mean)
-
 
         #Grupperer radene i dataframe etter verdier i kolonnen år
         #Mean() beregner gjennomsnitt for hver verdi inennfor gruppe hvert år gruppe
-
-        if vis_plot:
+        co2_per_year_mean = self.df.groupby('år')['verdi'].mean() 
             
-            #Plotter figuren
-            plt.figure(figsize=(10, 6))
-            co2_per_year_mean.plot(kind='bar', title="Figur 1: CO2-utslipp over tid (gjennomsnitt)")
-            plt.ylabel("Utslipp (1000 tonn CO2-ekv.)")
-            plt.xlabel("År")
-            plt.tight_layout()
-            plt.grid()
-            plt.show()
+        #Plotter figuren
+        plt.figure(figsize=(10, 6))
+        co2_per_year_mean.plot(kind='bar', title="Figur 1: CO2-utslipp over tid (gjennomsnitt)")
+        plt.ylabel("Utslipp (1000 tonn CO2-ekv.)")
+        plt.xlabel("År")
+        plt.tight_layout()
+        plt.grid()
+        plt.show()
 
         return co2_per_year_mean
     
@@ -117,6 +112,7 @@ class statitics_plot:
         Self : Et objekt i klassen
 
         Returnerer:
+        co2_per_year_median : En dataframe av år  og utslipp i median
         Plot av median av utslipp per år 
         """
 
@@ -140,6 +136,7 @@ class statitics_plot:
         Self : Et objekt i klassen
 
         Returnerer:
+        co2_per_source_mean: Dataframe av kilde og gjennomsnitt av utslipp 
         Plottet figur av gjennomsnittlige utslipp i hele perioden per kilde
         """
 
@@ -150,6 +147,7 @@ class statitics_plot:
         plt.ylabel("Utslipp (1000 tonn CO2-ekv.)")
         plt.xlabel("Kilde")
         plt.tight_layout()
+        plt.grid()
         plt.show()
 
 
@@ -163,6 +161,7 @@ class statitics_plot:
         Self : Et objekt i klassen
 
         Returnerer:
+        o2_per_year_std : Dataframe bestående av kilde som en kolonne og standardavvik av utslipp gruppevis
         Plottet figur av standardavvik utslipp i hele perioden per kilde
         """
         
@@ -173,6 +172,7 @@ class statitics_plot:
         plt.ylabel("Utslipp (1000 tonn CO2-ekv.)")
         plt.xlabel("Kilde")
         plt.tight_layout()
+        plt.grid()
         plt.show()
         return co2_per_year_std
     
