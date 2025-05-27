@@ -1,6 +1,6 @@
 # Prosjektbeskrivelse
 
-I denne oppgaven fremstilles data hentet fra yr og ssb, dataen er hentet fra hele Norge. I dette programmet vil vi se på data fra 2013 til 2024, og gi en prediktiv analyse av hvordan tallene kan se ut i fremtiden. 
+I denne oppgaven fremstilles data hentet fra yr og ssb, dataen er hentet fra hele Norge. Værdataene er hentet fra værstasjoner i Kristiansand og Trondheim. I dette programmet vil vi se på data fra 2013 til 2024, og gi en prediktiv analyse av hvordan tallene kan se ut i fremtiden. 
 
 ## Installasjonsbeskrivelse
 
