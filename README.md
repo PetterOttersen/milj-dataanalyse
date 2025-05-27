@@ -4,7 +4,7 @@ I denne oppgaven fremstilles data hentet fra yr og ssb, dataen er hentet fra hel
 
 ## Installasjonsbeskrivelse
 
-For å installere skriv "pip install requierements.txt"
+For å installere skriv "pip install -r requirements.txt"
 
 
 ## Bruksinstruks
