@@ -10,10 +10,6 @@ from IPython.display import display, HTML
 
 
 
-
-
-
-
 FILE_PATH = "../raw_data/data/Vaerdata.csv"
 
 class analyse_og_visualisere:
