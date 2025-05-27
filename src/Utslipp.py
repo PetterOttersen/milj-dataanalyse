@@ -36,7 +36,7 @@ def analyze_clean_utslipp_data(df):
     """
 
      
-     #ai #Dataen inneholder både heltall og tekstrenger. Datasettet ligger i grupper
+    #Dataen inneholder både heltall og tekstrenger. Datasettet ligger i grupper
     
     df.columns = ['kilde', 'energiprodukt', 'komponent', 'år', 'statistikkvariabel', 'verdi'] 
 
@@ -139,7 +139,7 @@ class statitics_plot:
         co2_per_source_median = self.df.groupby('kilde')['verdi'].mean() 
         
         plt.figure(figsize=(10, 6))
-        co2_per_source_median.plot(kind='bar', title="CO2-utslipp per kilde gjennomsnitt")
+        co2_per_source_median.plot(kind='bar', title="Figur 3: CO2-utslipp per kilde gjennomsnitt")
         plt.ylabel("Utslipp (1000 tonn CO2-ekv.)")
         plt.xlabel("Kilde")
         plt.tight_layout()
@@ -197,7 +197,7 @@ class statitics_plot:
         sns.heatmap(co2_source_year_hm, annot=True, fmt=".2f", linewidths=.5,cmap = "YlGnBu", ax=ax,cbar_kws={'label': 'log10(Utslipp i tonn)'})
         plt.xlabel("År",size = 11)        
         plt.ylabel("CO2 utslipp kilder", size = 11) 
-        plt.title("Varmekart over kilder, år og mengden av utslipp",size = 16)
+        plt.title("Figur 5: Varmekart over kilder, år og mengden av utslipp",size = 16)
         plt.show()
         
 
@@ -233,7 +233,7 @@ class plots_part_2:
         
         def regression_model():
             """
-            Lineær regresjon % 
+            Lineær regresjon 
             
             Parametre: 
             Self : Et objekt i klassen
@@ -291,7 +291,7 @@ class plots_part_2:
         plt.plot(X, y_full_pred, color="red", label="100 % Prediksjon")
         plt.xlabel("År")
         plt.ylabel("Verdi")
-        plt.title("Lineær regresjon")
+        plt.title("Figur 6: Lineær regresjon")
         plt.legend()
         plt.grid(True)
         plt.show()
@@ -334,7 +334,7 @@ class plots_part_2:
         plt.xticks(rotation=45, ha = "right")
         plt.xlabel("Kilde")
         plt.ylabel("Verdi")
-        plt.title("Linreg av Kilde og Verdi")
+        plt.title("Figur 7: Linreg av Kilde og Verdi")
         plt.tight_layout()
         plt.grid(True)
         plt.show()
@@ -403,7 +403,7 @@ class plots_part_2:
             plt.axvline(x=max(X["år"]), linestyle=":", color="gray")
             plt.xlabel("År")
             plt.ylabel("Verdi")
-            plt.title("Lineær regresjon med fremtidige prediksjoner")
+            plt.title("Figur 8: Lineær regresjon med fremtidige prediksjoner")
             plt.legend()
             plt.grid(True)
             plt.tight_layout()
@@ -447,6 +447,7 @@ class MissingValues:
         Returnerer:
         Dataframe med muligens nanverdier
         """
+        #Lagrer datasettet
         self.df = df.copy()
         if legg_til_nans:
             np.random.seed(seed)
@@ -467,14 +468,26 @@ class MissingValues:
         Returnerer:
         Bearbeidet datasett med nanverdier
         """
-        
+        #Sjekker riktig andel for nan verdier
         if not 0 < andel < 1:
             raise ValueError("Andel må være mellom 0 og 1.")
+        #Velger en viss andel data og fjerner denne dataen til nanverdier
         self.df = self.df.drop(self.df.sample(frac=andel, random_state=seed).index)
         return self.df
 
     def plot_missing_data(self, verdi_kolonne='verdi', år_kolonne='år'):
+        """
+        Bearbeider datasettet med nanverdier
         
+        Parametre: 
+        self : Et objekt i klassen
+        verdi_kolonne = 'verdi' : 50 % av datasettet med nan verdier
+        seed = none : Startverdi for tilfeldig tallgenerator
+        
+        Returnerer:
+        Bearbeidet datasett med nanverdier
+        """
+        #
         if verdi_kolonne not in self.df.columns or år_kolonne not in self.df.columns:
             raise KeyError(f"DataFrame må inneholde kolonnene '{verdi_kolonne}' og '{år_kolonne}'.")
 
@@ -508,11 +521,11 @@ class MissingValues:
                 marker='x',
                 s=100
             )
-
+        #Plotting
         plt.plot(X, y_pred, label='Lineær regresjon', color='green')
         plt.xlabel("År")
         plt.ylabel("Verdi")
-        plt.title("Lineær regresjon og imputering av manglende data")
+        plt.title("Figur 9: Lineær regresjon og imputering av manglende data")
         plt.legend()
         plt.grid(True)
         plt.tight_layout()

@@ -20,7 +20,4 @@ For best mulig gjennomkjøring bruk VS code eller jupiter notebook, da interakti
 yr - https://frost.met.no/observations/v0.jsonld
 
 ssb - https://data.ssb.no/api/v0/dataset/832678.csv?lang=no
-<<<<<<< HEAD
 
-=======
->>>>>>> c8997a3e15519de021ade09df109eaf2dfa1c27b
